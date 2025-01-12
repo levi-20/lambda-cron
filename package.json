@@ -1,0 +1,14 @@
+{
+  "name": "cronify",
+  "version": "1.0.0",
+  "description": "A simple plugin to schedule cronjobs for lambdas",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "levi",
+  "repository": {
+    "url": "https://github.com/levi-20/cronify"
+  },
+  "license": "MIT"
+}
