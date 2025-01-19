@@ -1,6 +1,6 @@
 {
   "name": "lambda-cron",
-  "version": "0.0.2",
+  "version": "0.0.3",
   "description": "A simple plugin to schedule cronjobs for lambdas",
   "main": "index.js",
   "scripts": {
