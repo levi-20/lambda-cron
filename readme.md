@@ -1,5 +1,5 @@
 # Cronify
-    A simple serverless plugin to schedule lambdas
+    A simple serverless plugin to schedule lambdas for cron
 
 [![Node.js Package](https://github.com/levi-20/cronify/actions/workflows/npm-publish.yml/badge.svg)](https://github.com/levi-20/cronify/actions/workflows/npm-publish.yml)
 
