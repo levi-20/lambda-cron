@@ -2,10 +2,11 @@
 
 # lambda-cron
 
-    A simple serverless plugin to schedule lambdas for cron
+A simple sYerverless plugin to schedule lambdas for cron
 
-[![Node.js Package](https://github.com/levi-20/cronify/actions/workflows/npm-publish.yml/badge.svg)](https://github.com/levi-20/cronify/actions/workflows/npm-publish.yml)
+[![NPM version](https://img.shields.io/npm/v/lambda-cron.svg)](https://www.npmjs.com/package/lambda-cron)
+[![Build](https://github.com/levi-20/cronify/actions/workflows/npm-publish.yml/badge.svg)](https://github.com/levi-20/cronify/actions/workflows/npm-publish.yml)
 
 # Note
 
-### This project is in development. this is pre release. its not promised to work as expected. it was publised to test the publish actions
+### This project is in development. this is pre release. its not promised to work as expected. the project is under development will be released soon.

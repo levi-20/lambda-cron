@@ -13,7 +13,9 @@ export interface PluginConfigItem {
 }
 
 export interface PluginConfig {
-	[key: string]: PluginConfigItem[];
+	[key: string]: {
+		[key: string]: PluginConfigItem[];
+	};
 }
 
 export interface FunctionCronJobConfig {
@@ -21,7 +23,7 @@ export interface FunctionCronJobConfig {
 	cronJobConfig: PluginConfigItem[];
 }
 
-export type SlsLog = Serverless['cli']['log'];
+export type SlsLog = Serverless[];
 
 export interface Rate {
 	time: number;
