@@ -30,12 +30,12 @@ export default class LambdaCronJobs {
 	}
 
 	private hasCronJobs() {
-		return !!(this.pluginConfig && this.pluginConfig[this.stage]);
+		return !!(this.pluginConfig && this.stage in this.pluginConfig);
 	}
 
 	private beforePackage() {
 		if (!this.hasCronJobs) {
-			this.log(`No cron job configurations for ${this.stage}`);
+			this.log(`No cron job configurations for stage ${this.stage}`);
 		}
 
 		try {
