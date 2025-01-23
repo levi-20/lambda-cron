@@ -7,35 +7,56 @@ export interface Functions {
 		| Serverless.FunctionDefinitionHandler
 		| Serverless.FunctionDefinitionImage;
 }
-export interface PluginConfigItem {
-	rate: Rate;
-	input?: Record<string, unknown>;
-}
 
 export interface PluginConfig {
-	[key: string]: {
-		[key: string]: PluginConfigItem[];
-	};
+	[key: string]: PluginConfigItem;
 }
 
-export interface FunctionCronJobConfig {
-	functionName: string;
-	cronJobConfig: PluginConfigItem[];
-}
-
-export type SlsLog = Serverless[];
-
-export interface Rate {
-	time: number;
-	rate: RateString;
-}
-
-export enum RateString {
-	'minute',
-	'hour',
-	'month',
+export interface PluginConfigItem {
+	schedule: RateSchedule | DailySchedule | MonthlySchedule;
+	input: Record<any, unknown>;
 }
 
 export interface Hooks {
 	[key: string]: () => void;
+}
+
+export interface CronScheduleBase {
+	rate?: Rate;
+	daily?: Daily;
+	monthly?: Monthly;
+}
+
+export interface Rate {
+	runRate: number;
+	internal: number;
+}
+
+export interface Daily {
+	hours: number;
+	minutes?: number;
+}
+
+export interface Monthly {
+	day: number;
+	hours?: number;
+	minutes?: number;
+}
+export interface RateSchedule extends CronScheduleBase {
+	rate: Rate;
+}
+
+export interface DailySchedule extends CronScheduleBase {
+	daily: {
+		hours: number;
+		minutes?: number;
+	};
+}
+
+export interface MonthlySchedule extends CronScheduleBase {
+	monthly: {
+		day: number;
+		hours?: number;
+		minutes?: number;
+	};
 }
