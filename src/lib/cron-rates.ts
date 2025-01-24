@@ -4,7 +4,7 @@ import { Daily, Monthly, Rate } from '../types';
 
 export const scheduleInterval = (rate: Rate) => {
 	if ('runRate' in rate && 'interval' in rate) {
-		return `rate( ${rate.interval} ${rate.runRate})`;
+		return `rate(${rate.interval} ${rate.runRate})`;
 	}
 	return '';
 };
