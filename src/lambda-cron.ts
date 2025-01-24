@@ -76,7 +76,7 @@ export default class LambdaCronJobs {
 		const currentFunction = this.functions[functionName];
 		currentFunction.events = currentFunction.events ?? [];
 		const cronSchedules: Aws.Event[] = this.schedule(cronJobConfig);
-
+		// Added scheduled event to lambda
 		currentFunction.events = [...currentFunction.events, ...cronSchedules];
 	}
 
@@ -86,7 +86,7 @@ export default class LambdaCronJobs {
 		return [
 			{
 				schedule: {
-					rate: rate,
+					rate: [rate],
 					input: cronJobConfig?.input,
 				},
 			},

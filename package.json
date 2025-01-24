@@ -1,6 +1,6 @@
 {
   "name": "lambda-cron",
-  "version": "0.0.11",
+  "version": "0.0.12",
   "description": "Super light weight Serverless Plugin to simplify adding cron jobs to functions",
   "main": "./dist/index.js",
   "module": "./dist/index.mjs",
@@ -24,7 +24,6 @@
     "serverless": "^3.0.0",
     "ts-node": "^10.9.2",
     "tsup": "^8.3.5",
-    "tsx": "^4.19.2",
     "typescript": "^5.7.3"
   }
 }
