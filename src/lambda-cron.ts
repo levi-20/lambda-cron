@@ -53,8 +53,9 @@ export default class LambdaCronJobs {
 	}
 
 	private beforePackage() {
-		if (!this.hasCronJobs) {
-			this.log(`No cron job configurations for stage ${this.stage}`);
+		if (!this.hasCronJobs()) {
+			this.log(`No cron job configurations found for stage ${this.stage}`);
+			return;
 		}
 
 		this.getStageConfig();
