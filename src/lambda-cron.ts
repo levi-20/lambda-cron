@@ -2,19 +2,25 @@
 
 import Serverless from 'serverless';
 import {
+	Daily,
 	DailySchedule,
 	Functions,
 	Hooks,
+	Monthly,
 	MonthlySchedule,
 	PluginConfig,
 	PluginConfigItem,
+	Rate,
 	RateSchedule,
+	Weekly,
+	WeeklySchedule,
 } from './types';
 import Aws from 'serverless/plugins/aws/provider/awsProvider';
 import {
 	scheduleDaily,
 	scheduleInterval,
 	scheduleMonthly,
+	scheduleWeekly,
 } from './lib/cron-rates';
 
 export const CONFIG_ROOT_KEY = 'lambdaCronJobs';
@@ -94,14 +100,18 @@ export default class LambdaCronJobs {
 		];
 	}
 
-	private getRate(rate: RateSchedule | DailySchedule | MonthlySchedule) {
+	private getRate(
+		rate: RateSchedule | DailySchedule | MonthlySchedule | WeeklySchedule
+	) {
 		if (Object.keys(rate).length > 1)
-			throw 'cron can be scheduled with only one of these: rate , daily, monthly';
-		if ('rate' in rate) return scheduleInterval(rate.rate as any);
-		else if ('daily' in rate) return scheduleDaily(rate.daily as any);
-		else if ('mothly' in rate) return scheduleMonthly(rate.monthly);
+			throw 'cron can be scheduled with only one of these schedule rates: rate, daily, weekly, monthly';
+		if ('rate' in rate) return scheduleInterval(rate.rate as Rate);
+		else if ('daily' in rate) return scheduleDaily(rate.daily as Daily);
+		else if ('weekly' in rate) return scheduleWeekly(rate.weekly as Weekly);
+		else if ('monthly' in rate)
+			return scheduleMonthly(rate?.monthly as Monthly);
 		else {
-			this.log('Skipping Cron schedule');
+			this.log('Skipping Cron schedule as no valid configurations were found');
 		}
 	}
 }

@@ -24,16 +24,22 @@ export interface Hooks {
 export interface CronScheduleBase {
 	rate?: Rate;
 	daily?: Daily;
+	weekly?: Weekly;
 	monthly?: Monthly;
 }
 
 export interface Rate {
-	runRate: number;
+	runRate: string;
 	internal: number;
 }
 
 export interface Daily {
 	hours: number;
+	minutes?: number;
+}
+export interface Weekly {
+	day: number;
+	hours?: number;
 	minutes?: number;
 }
 
@@ -49,6 +55,14 @@ export interface RateSchedule extends CronScheduleBase {
 export interface DailySchedule extends CronScheduleBase {
 	daily: {
 		hours: number;
+		minutes?: number;
+	};
+}
+
+export interface WeeklySchedule extends CronScheduleBase {
+	weekly: {
+		day: number;
+		hours?: number;
 		minutes?: number;
 	};
 }
