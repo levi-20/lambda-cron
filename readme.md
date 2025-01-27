@@ -14,26 +14,40 @@ This plugin enables you to schedule Lambda functions with a variety of cron job 
 ## Features
 
 - Configure schedules for Lambda functions across different stages.
-- Flexible scheduling options: minute-based and hour -based and day-based intervals, specific daily times, weekly days, and monthly schedules.
+- Flexible scheduling options:
+  - Minute-based
+  - Hour-based
+  - Day-based interval
+  - Specific time of a day
+  - Specific day of the wwek
+  - Specific dauy of the month at a specific time.
 - Pass custom input parameters to Lambda functions.
 
 ### Rate based Schedule
 
 You can schedule a lamba to run in specific intervals. i.e., `minutes` job will run every `x` minutes of `interval`
 
-**`runRate`**: can have below values:
+**`runRate`**: can have below values (`required`):
 
 - `days`
 - `hours`
 - `minutes`
 
+**`interval`**: is the time after which the job will run again (`required`)
+
 ```typescript
-schedule: {
+{
+  schedule: {
   rate: {
     runRate: 'minutes',
     interval: 2,
   },
   // this will run every 2 minutes
+  },
+  input: {
+    key1: 'value1',
+    key2: 'value2'
+  }
 }
 ```
 
@@ -42,14 +56,17 @@ schedule:
   rate:
     runRate: days
     interval: 2
+input:
+  key1: value1
+  key2: value2
   # this will run every 2 days.
 ```
 
 ### Weekly Schedule
 
-With `weekly` schedule you can run any job on a specific day of the week.
+With `weekly` schedule you can run any job on a specific day of the week at a specicifix time of the day.
 
-- **`day`**: Day of the week raanges from 1-7. (`1` = Sunday, `7` = Saturday)
+- **`day`**: Day of the week raanges from 1-7. (`1` = Sunday, `7` = Saturday, `required`)
   - `1` is Sunday
   - `2` is Monday
   - `3` is Tuesday
@@ -57,54 +74,69 @@ With `weekly` schedule you can run any job on a specific day of the week.
   - `5` is Thursday
   - `6` is Friday
   - `7` is Saturday
-- **`hours`**: Hour of the day (24-hour format, optional, defaults to 0).
-- **`minutes`**: Minute of the hour (optional, defaults to 0).
+- **`hours`**: Hour of the day (24-hour format, `optional`, defaults to 0).
+- **`minutes`**: Minute of the hour (`optional`, defaults to 0).
 
 ```typescript
-weekly: {
-  day: <day-of-the-week>, // required, starts to 1
-  hours: <hour-of-the-day>, // optional, defaults to 0
-  minutes: <minute-of-the-hour>, // optional, defaults to 0
+schedule:{
+  weekly: {
+    day: <day-of-the-week>, // required, starts to 1
+    hours: <hour-of-the-day>, // optional, defaults to 0
+    minutes: <minute-of-the-hour>, // optional, defaults to 0
+  }
 }
 ```
 
 ```yaml
-weekly:
-  day: <day-of-the-week> # required, starts at 1
-  hours: <hour-of-the-day> # optional, defaults to 0
-  minutes: <minute-of-the-hour> # optional, defaults to 0
+schedule:
+  weekly:
+    day: <day-of-the-week> # required, starts at 1
+    hours: <hour-of-the-day> # optional, defaults to 0
+    minutes: <minute-of-the-hour> # optional, defaults to 0
 ```
 
 ### Monthly Schedule
 
+With `monthly` schedule you can run any job on a specific day of the month at a specific time of the day.
+
+- **`day`**: Day of the montn.(raanges from 1-31, `required`)
+- **`hours`**: Hour of the day (24-hour format, `optional`, defaults to 0).
+- **`minutes`**: Minute of the hour (`optional`, defaults to 0).
+
 ```typescript
-monthly: {
-  day: <day-of-the-month>, // starts with 1
-  hours: <hour-of-the-day>, // optional, defaults to 0
-  minutes: <minute-of-the-hour>, // optional, defaults to 0
+schedule:{
+  monthly: {
+    day: <day-of-the-week>, // required, starts to 1
+    hours: <hour-of-the-day>, // optional, defaults to 0
+    minutes: <minute-of-the-hour>, // optional, defaults to 0
+  }
 }
 ```
 
-- **`day`**: Day of the month (defaults to 0).
-- **`hours`**: Hour of the day (24-hour format, optional, defaults to 0).
-- **`minutes`**: Minute of the hour (optional, defaults to 0).
+```yaml
+schedule:
+  monthly:
+    day: <day-of-the-week> # required, starts at 1
+    hours: <hour-of-the-day> # optional, defaults to 0
+    minutes: <minute-of-the-hour> # optional, defaults to 0
+```
 
 ## Input Configuration
 
-Each Lambda function can accept custom input parameters:
+Each Lambda function can accept custom input parameters. You can provide key-value pairs as input parameters to the Lambda function.
 
 ```typescript
-input: {
-	key: 'value';
+{
+  schedule:{...}
+  input: {
+    employee: {
+      name: "Sam",
+      salary: 56000,
+      married: true
+    }
+  }
 }
 ```
-
-You can provide key-value pairs as input parameters to the Lambda function.
-
-## Usage
-
-1. Install the plugin in your Serverless project.
-2. Add the `lambda-cron` configuration block to your `serverless.yml` or `serverless.ts` file.
 
 ## Configuration Example
 
