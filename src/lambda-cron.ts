@@ -8,8 +8,8 @@ import {
 	Hooks,
 	Monthly,
 	MonthlySchedule,
-	PluginConfig,
-	PluginConfigItem,
+	PluginConfiguration,
+	PluginConfigurationObject,
 	Rate,
 	RateSchedule,
 	Weekly,
@@ -31,7 +31,7 @@ export default class LambdaCronJobs {
 	service: any;
 	provider: any;
 	log: any;
-	pluginConfig: PluginConfig;
+	pluginConfig: PluginConfiguration;
 	hooks: Hooks;
 	stage: string;
 	config: any;
@@ -78,7 +78,7 @@ export default class LambdaCronJobs {
 
 	private addCronSchedule(
 		functionName: string,
-		cronJobConfig: PluginConfigItem
+		cronJobConfig: PluginConfigurationObject
 	) {
 		const currentFunction = this.functions[functionName];
 		currentFunction.events = currentFunction.events ?? [];
@@ -87,7 +87,7 @@ export default class LambdaCronJobs {
 		currentFunction.events = [...currentFunction.events, ...cronSchedules];
 	}
 
-	private schedule(cronJobConfig: PluginConfigItem) {
+	private schedule(cronJobConfig: PluginConfigurationObject) {
 		const rate = this.getRate(cronJobConfig.schedule);
 		if (!rate) return [];
 		return [

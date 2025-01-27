@@ -8,12 +8,12 @@ export interface Functions {
 		| Serverless.FunctionDefinitionImage;
 }
 
-export interface PluginConfig {
-	[key: string]: PluginConfigItem;
+export interface PluginConfiguration {
+	[key: string]: PluginConfigurationObject;
 }
 
-export interface PluginConfigItem {
-	schedule: RateSchedule | DailySchedule | MonthlySchedule;
+export interface PluginConfigurationObject {
+	schedule: RateSchedule | DailySchedule | WeeklySchedule | MonthlySchedule;
 	input: Record<any, unknown>;
 }
 
@@ -53,24 +53,13 @@ export interface RateSchedule extends CronScheduleBase {
 }
 
 export interface DailySchedule extends CronScheduleBase {
-	daily: {
-		hours: number;
-		minutes?: number;
-	};
+	daily: Daily;
 }
 
 export interface WeeklySchedule extends CronScheduleBase {
-	weekly: {
-		day: number;
-		hours?: number;
-		minutes?: number;
-	};
+	weekly: Weekly;
 }
 
 export interface MonthlySchedule extends CronScheduleBase {
-	monthly: {
-		day: number;
-		hours?: number;
-		minutes?: number;
-	};
+	monthly: Monthly;
 }
