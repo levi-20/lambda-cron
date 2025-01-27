@@ -23,7 +23,7 @@ import {
 	scheduleWeekly,
 } from './lib/cron-rates';
 
-export const CONFIG_ROOT_KEY = 'lambdaCronJobs';
+export const CONFIG_KEY = 'lambda-cron';
 export const BEFORE_PACKAGE_HOOK = 'before:package:initialize';
 
 export default class LambdaCronJobs {
@@ -46,7 +46,7 @@ export default class LambdaCronJobs {
 		this.functions = serverless.service?.functions;
 		this.stage = options?.stage ?? serverless.service.provider?.stage;
 		this.provider = serverless.getProvider('aws');
-		this.pluginConfig = serverless.service?.custom[CONFIG_ROOT_KEY];
+		this.pluginConfig = serverless.service?.custom[CONFIG_KEY];
 		this.hooks = { [BEFORE_PACKAGE_HOOK]: () => this.beforePackage() };
 	}
 
@@ -59,18 +59,18 @@ export default class LambdaCronJobs {
 	}
 
 	private beforePackage() {
-		if (!this.hasCronJobs()) {
-			this.log(`No cron job configurations found for stage ${this.stage}`);
-			return;
-		}
-
-		this.getStageConfig();
-		this.log(this.config);
-
-		for (let functionName in this.config) {
-			this.addCronSchedule(functionName, this.config[functionName]);
-		}
 		try {
+			if (!this.hasCronJobs()) {
+				this.log(`No cron job configurations found for stage ${this.stage}`);
+				return;
+			}
+
+			this.getStageConfig();
+			this.log(this.config);
+
+			for (let functionName in this.config) {
+				this.addCronSchedule(functionName, this.config[functionName]);
+			}
 		} catch (error: any) {
 			throw error;
 		}
@@ -104,7 +104,7 @@ export default class LambdaCronJobs {
 		rate: RateSchedule | DailySchedule | MonthlySchedule | WeeklySchedule
 	) {
 		if (Object.keys(rate).length > 1)
-			throw 'cron can be scheduled with only one of these schedule rates: rate, daily, weekly, monthly';
+			throw 'cron can be scheduled with only one of these schedules only: rate, daily, weekly, monthly';
 		if ('rate' in rate) return scheduleInterval(rate.rate as Rate);
 		else if ('daily' in rate) return scheduleDaily(rate.daily as Daily);
 		else if ('weekly' in rate) return scheduleWeekly(rate.weekly as Weekly);
