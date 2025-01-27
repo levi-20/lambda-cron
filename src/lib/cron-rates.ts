@@ -1,6 +1,5 @@
 /** @format */
 
-import { ALL } from 'dns';
 import { Daily, Monthly, Rate, Weekly } from '../types';
 
 export const ALLOWED_RUN_RATES = [
