@@ -23,6 +23,21 @@ This plugin enables you to schedule Lambda functions with a variety of cron job 
   - Specific dauy of the month at a specific time.
 - Pass custom input parameters to Lambda functions.
 
+## Intallation
+
+- First Add it to your project
+
+  - npm: `npm i -D lambda-cron`
+  - pnpm: `pnpm i -D lambda-cron`
+  - yarn: `yarn add -D lambda-cron`
+
+- Include it in your plugins:
+
+  ```yaml
+  plugins:
+    - serverless-offline
+  ```
+
 ### Rate based Schedule
 
 You can schedule a lamba to run in specific intervals. i.e., `minutes` job will run every `x` minutes of `interval`
