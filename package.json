@@ -1,6 +1,6 @@
 {
 	"name": "lambda-cron",
-	"version": "beta_0.1.6",
+	"version": "0.1.6-beta.1",
 	"description": "Super light weight Serverless Plugin to simplify adding cron jobs to aws lambda functions",
 	"author": "levi",
 	"repository": {
