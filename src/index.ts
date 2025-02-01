@@ -246,7 +246,7 @@ export default class LambdaCronJobs {
 		const day = weekly.day.toLowerCase();
 		const hours = weekly?.hour ?? 0;
 		const minutes = weekly?.minute ?? 0;
-		return `cron(${minutes} ${hours} ? * ${DAYS} *)`;
+		return `cron(${minutes} ${hours} ? * ${DAYS.get(day)} *)`;
 	}
 
 	private scheduleMonthly(monthly: Monthly) {
