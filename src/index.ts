@@ -171,7 +171,7 @@ export default class LambdaCronJobs {
 				'Missing param: both "unit", "duration" are required for interval schedule'
 			);
 		else if (typeof interval.unit != 'string')
-			throw new Error('Invalid param: interval unit must be a number');
+			throw new Error('Invalid param: interval unit must be a string');
 		else if (!ALLOWED_INTERVAL_UNIT.includes(interval.unit))
 			throw new Error(
 				'Invalid param: Invalid unit provided. Valid units are: ' +
@@ -255,9 +255,9 @@ export default class LambdaCronJobs {
 				'day is required for monthly schedule to schedule for a given day'
 			);
 
-		if (typeof monthly.day != 'number' || monthly.day < 0 || monthly.day > 31)
+		if (typeof monthly.day != 'number' || monthly.day < 1 || monthly.day > 31)
 			throw new Error(
-				'Invalid param: day must be a number for monthly schedule between 0 and 60'
+				'Invalid param: day must be a number for monthly schedule between 1 and 31'
 			);
 
 		if (monthly?.hour) {
