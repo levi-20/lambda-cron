@@ -4,7 +4,7 @@ import Serverless from 'serverless';
 import Aws from 'serverless/plugins/aws/provider/awsProvider';
 
 const CONFIG_KEY = 'lambda-cron';
-const BEFORE_PACKAGE_HOOK = 'before:package:initialize';
+export const BEFORE_PACKAGE_HOOK = 'before:package:initialize';
 interface Functions {
 	[key: string]:
 		| Serverless.FunctionDefinitionHandler
@@ -16,13 +16,13 @@ interface PluginConfiguration {
 }
 interface PluginConfigurationObject {
 	schedule: CronScheduleBase;
-	input: Record<any, unknown>;
+	input?: Record<any, unknown>;
 }
 
 interface Hooks {
 	[key: string]: () => void;
 }
-enum CrontType {
+export enum CrontType {
 	'daily',
 	'interval',
 	'monthly',
@@ -86,11 +86,17 @@ export default class LambdaCronJobs {
 
 	constructor(serverless: Serverless, options: Serverless.Options) {
 		this.service = serverless.service;
-		this.functions = serverless.service?.functions;
-		this.stage = options?.stage ?? serverless.service.provider?.stage;
+		this.functions = this.service?.functions;
+		this.stage = options?.stage ?? this.service.provider?.stage;
 		this.provider = serverless.getProvider('aws');
-		this.pluginConfig = serverless.service?.custom[CONFIG_KEY];
-		this.hooks = { [BEFORE_PACKAGE_HOOK]: () => this.beforePackage() };
+
+		if ('custom' in this.service && CONFIG_KEY in this.service.custom)
+			this.pluginConfig = this.service.custom[CONFIG_KEY];
+		else this.pluginConfig = undefined as unknown as PluginConfiguration;
+
+		this.hooks = {
+			[BEFORE_PACKAGE_HOOK]: () => this.beforePackage(),
+		};
 	}
 
 	private hasCronJobs() {
@@ -123,7 +129,7 @@ export default class LambdaCronJobs {
 		cronJobConfig: PluginConfigurationObject
 	) {
 		const currentFunction = this.functions[functionName];
-		currentFunction.events = currentFunction.events ?? [];
+		currentFunction.events = currentFunction?.events ?? [];
 		const cronSchedules: Aws.Event[] = this.getScheduleEvent(cronJobConfig);
 		// Added scheduled event to lambda
 		currentFunction.events = [...currentFunction.events, ...cronSchedules];
@@ -133,13 +139,11 @@ export default class LambdaCronJobs {
 		});
 	}
 
-	private getScheduleEvent(cronJobConfig: PluginConfigurationObject) {
-		const rate = this.schedule(cronJobConfig.schedule);
-		if (!rate) return [];
+	public getScheduleEvent(cronJobConfig: PluginConfigurationObject) {
 		return [
 			{
 				schedule: {
-					rate: [rate],
+					rate: [this.schedule(cronJobConfig.schedule)],
 					input: cronJobConfig?.input,
 				},
 			},
@@ -184,7 +188,7 @@ export default class LambdaCronJobs {
 	}
 
 	private scheduleDaily = (daily: Daily) => {
-		if (!daily?.hour)
+		if (!('hour' in daily))
 			throw new Error('Missing param: hour is required for daily schedule');
 		else if (typeof daily.hour != 'number' || daily.hour < 0 || daily.hour > 24)
 			throw new Error(
@@ -194,10 +198,10 @@ export default class LambdaCronJobs {
 			if (
 				typeof daily.minute != 'number' ||
 				daily.minute < 0 ||
-				daily.minute > 60
+				daily.minute > 59
 			)
 				throw new Error(
-					'Invalid param: minute must be a number between 0 and 60'
+					'Invalid param: minute must be a number between 0 and 59'
 				);
 		} else {
 			console.log('minute is not provided in params default value is set to 0');
@@ -210,9 +214,7 @@ export default class LambdaCronJobs {
 
 	private scheduleWeekly(weekly: Weekly) {
 		if (!weekly?.day)
-			throw new Error(
-				'day is required for Weekly schedule to schedule for given day'
-			);
+			throw new Error('Missing param: day is required for weekly schedule');
 
 		if (typeof weekly.day != 'string')
 			throw new Error('Invalid param: day must be a string');
@@ -220,7 +222,7 @@ export default class LambdaCronJobs {
 		if (!ALLOWED_DAYS.includes(weekly.day.toLowerCase()))
 			throw new Error(
 				'Invalid param: invalid day passed. Allowed values are: ' +
-					ALLOWED_DAYS.toString()
+					ALLOWED_DAYS.toString().replaceAll(',', ', ')
 			);
 
 		if (weekly.hour) {
@@ -235,10 +237,10 @@ export default class LambdaCronJobs {
 			if (
 				typeof weekly.minute != 'number' ||
 				weekly.minute < 0 ||
-				weekly.minute > 60
+				weekly.minute > 59
 			)
 				throw new Error(
-					'Invalid param: minute must be a number between 0 and 60'
+					'Invalid param: minute must be a number between 0 and 59'
 				);
 		} else
 			console.log('minute is not provided in params default value is set to 0');
@@ -250,10 +252,8 @@ export default class LambdaCronJobs {
 	}
 
 	private scheduleMonthly(monthly: Monthly) {
-		if (!monthly?.day)
-			throw new Error(
-				'day is required for monthly schedule to schedule for a given day'
-			);
+		if (!('day' in monthly))
+			throw new Error('Missing param: day is required for monthly schedule');
 
 		if (typeof monthly.day != 'number' || monthly.day < 1 || monthly.day > 31)
 			throw new Error(
@@ -276,15 +276,15 @@ export default class LambdaCronJobs {
 			if (
 				typeof monthly.minute != 'number' ||
 				monthly.minute < 0 ||
-				monthly.minute > 60
+				monthly.minute > 59
 			)
 				throw new Error(
-					'Invalid param: minute must be a number between 0 and 60'
+					'Invalid param: minute must be a number between 0 and 59'
 				);
 		} else
 			console.log('minute is not provided in params default value is set to 0');
 
-		const day = monthly?.day ?? 0;
+		const day = monthly.day;
 		const hours = monthly?.hour ?? 0;
 		const minutes = monthly?.minute ?? 0;
 		return `cron(${minutes} ${hours} ${day} * ? *)`;
