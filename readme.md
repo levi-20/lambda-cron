@@ -11,16 +11,27 @@ This plugin enables you to schedule Lambda functions with a variety of cron job 
 
 > Note: This plugin build specifically for `aws` provider.
 
+## Table of Contents
+
+- [Features](#features)
+- [Installation](#installation)
+- [Schedule Configuration](#schedule-configuration)
+  - [Rate based Schedule](#rate-based-schedule)
+  - [Weekly Schedule](#weekly-schedule)
+  - [Monthly Schedule](#monthly-schedule)
+- [Input Configuration](#input-configuration)
+- [Configuration Example](#configuration-example)
+  - [Typescript Example](#typescript-example)
+  - [YAML Example](#yaml-example)
+
 ## Features
 
 - Configure schedules for Lambda functions across different stages.
 - Flexible scheduling options:
-  - Minute-based
-  - Hour-based
-  - Day-based interval
+  - Schedule to run in interval (minutes, hours, days)
   - Specific time of a day
-  - Specific day of the wwek
-  - Specific dauy of the month at a specific time.
+  - Specific day of the week at at specific time
+  - Specific day of the month at a specific time.
 - Pass custom input parameters to Lambda functions.
 
 ## Installation
@@ -37,6 +48,8 @@ This plugin enables you to schedule Lambda functions with a variety of cron job 
   plugins:
     - lambda-cron
   ```
+
+## Schedule Configuration
 
 ### Rate based Schedule
 
@@ -134,23 +147,6 @@ schedule:
     day: <day-of-the-week> # required, starts at 1
     hours: <hour-of-the-day> # optional, defaults to 0
     minutes: <minute-of-the-hour> # optional, defaults to 0
-```
-
-## Input Configuration
-
-Each Lambda function can accept custom input parameters. You can provide key-value pairs as input parameters to the Lambda function.
-
-```typescript
-{
-  schedule:{...}
-  input: {
-    employee: {
-      name: "Sam",
-      salary: 56000,
-      married: true
-    }
-  }
-}
 ```
 
 ## Configuration Example
@@ -296,7 +292,3 @@ custom:
         input:
           key: value
 ```
-
-## License
-
-This project is licensed under the MIT License.
