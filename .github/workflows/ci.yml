@@ -1,4 +1,5 @@
 # @format
+name: CI/Push
 
 on:
   push:
