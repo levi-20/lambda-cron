@@ -1,20 +1,33 @@
-name: CI/Pull
+name: CI (Pull Request)
 
 on:
   pull_request:
-    types:
-      - opened
-      - reopened
-      - synchronize
+    types: [opened, synchronize, reopened]
 
 jobs:
-  build:
-    name: PR Build & Coverage
+  determine-ci-inputs:
+    name: Determine CI Inputs
     runs-on: ubuntu-latest
-    steps: 
+    timeout-minutes: 30
+    environment: CI
+    outputs:
+      before-sha: ${{ steps.determine-ci-inputs.outputs.before-sha }}
+      development-change: ${{ steps.determine-ci-inputs.outputs.development-change }}
+      what-changed: ${{ steps.determine-ci-inputs.outputs.what-changed }}
+    steps:
       - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
         with:
-          node-version: 22
-      - run: npm ci
-      - run: npm run coverage
+          fetch-depth: 0
+      - name: Determine CI inputs
+        id: determine-ci-inputs
+        uses: ./.github/determine-ci-inputs
+
+  ci:
+    name: CI
+    needs: [determine-ci-inputs]
+    if: (always() && !failure() && !cancelled())
+    uses: ./.github/workflows/ci.yml
+    with:
+      before-sha: ${{ needs.determine-ci-inputs.outputs.before-sha }}
+      development-change: ${{ needs.determine-ci-inputs.outputs.development-change }}
+    secrets: inherit
