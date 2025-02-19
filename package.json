@@ -15,7 +15,8 @@
   ],
   "scripts": {
     "build": "tsup",
-    "test": "jest test"
+    "test": "jest",
+    "coverage": "jest --coverage"
   },
   "devDependencies": {
     "@jest/globals": "^29.7.0",
