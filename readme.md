@@ -1,3 +1,4 @@
+>This documentation is applicable only for [v1.6](https://github.com/levi-20/lambda-cron/tree/ef4b7daaf28cf5b7aeb379b86bfa03e1fdfaa475) and earlier. For latest docs [go here](https://github.com/levi-20/lambda-cron/blob/main/readme.md)
 <!-- @format -->
 
 # Cron jobs for serverless lambda
@@ -10,6 +11,7 @@
 This plugin enables you to schedule Lambda functions with a variety of cron job frequencies. It supports different(`dev`,`test`,`production`) stages with options for different timing intervals like minutes, daily, weekly, and monthly schedules.
 
 > Note: This plugin build specifically for `aws` provider.
+
 
 ## Table of Contents
 
@@ -156,7 +158,7 @@ Below is an example of how to configure the `lambda-cron` plugin for the `dev` s
 ### Typescript Example
 
 ```typescript
-const serverlessConfiguration: AWS = {
+{
 	service: 'aws-serverless-typescript-project',
 	frameworkVersion: '3',
 	// include it in your plugins
