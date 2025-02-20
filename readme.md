@@ -1,4 +1,5 @@
 <!-- @format -->
+>This documentation is applicable only for [v1.6](https://github.com/levi-20/lambda-cron/tree/d25dd42d8d4c227c83bc56e46526c0ad7167549d) and earlier. For latest docs [go here](https://github.com/levi-20/lambda-cron/blob/main/readme.md)
 
 # Cron Jobs for Serverless Lambda
 
