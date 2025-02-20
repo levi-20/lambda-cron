@@ -1,5 +1,6 @@
->This documentation is applicable only for [v1.6](https://github.com/levi-20/lambda-cron/tree/9a19b5391d00ee46e322f37f67573b37ead3f0e7) and earlier. For latest docs [go here](https://github.com/levi-20/lambda-cron/blob/main/readme.md)
 <!-- @format -->
+
+> **For version [v1.6](https://github.com/levi-20/lambda-cron/releases/tag/0.1.6) or earlier go [here](https://github.com/levi-20/lambda-cron/tree/9a19b5391d00ee46e322f37f67573b37ead3f0e7).**
 
 # Cron jobs for serverless lambda
 
@@ -12,13 +13,13 @@ This plugin enables you to schedule Lambda functions with a variety of cron job 
 
 > Note: This plugin build specifically for `aws` provider.
 
-
 ## Table of Contents
 
 - [Features](#features)
 - [Installation](#installation)
 - [Schedule Configuration](#schedule-configuration)
-  - [Rate based Schedule](#rate-based-schedule)
+  - [Interval based Schedule](#interval-based-schedule)
+  - [Daily Schedule](#daily-schedule)
   - [Weekly Schedule](#weekly-schedule)
   - [Monthly Schedule](#monthly-schedule)
 - [Input Configuration](#input-configuration)
@@ -30,10 +31,10 @@ This plugin enables you to schedule Lambda functions with a variety of cron job 
 
 - Configure schedules for Lambda functions across different stages.
 - Flexible scheduling options:
-  - Schedule to run in interval (minutes, hours, days)
-  - Specific time of a day
-  - Specific day of the week at at specific time
-  - Specific day of the month at a specific time.
+  - **`interval`**: Schedule to run in interval (minutes, hours, days)
+  - **`daily`**: Specific time of a day
+  - **`weekly`**: Specific day of the week at at specific time
+  - **`monthly`**: Specific day of the month at a specific time.
 - Pass custom input parameters to Lambda functions.
 
 ## Installation
@@ -53,92 +54,122 @@ This plugin enables you to schedule Lambda functions with a variety of cron job 
 
 ## Schedule Configuration
 
-### Rate based Schedule
+### 1. Interval based schedule
 
-You can schedule a lamba to run in specific intervals. i.e., `minutes` job will run every `x` minutes of `interval`
+You can schedule a lamba to run in specific intervals. i.e., for unit `minute` job, will run every `x` minutes of `interval`
 
-**`runRate`**: can have below values (`required`):
+**`unit`**: _`required`_ Interval unit can have below values:
 
-- `days`
-- `hours`
-- `minutes`
+- `day`
+- `hour`
+- `minute`
 
-**`interval`**: is the time after which the job will run again (`required`)
+**`duration`**: _`required`_ is the time after which the job will run again (`required`)
 
 ```typescript
+// hello lambda function will run every 2 minutes
 {
-  schedule: {
-  rate: {
-    runRate: 'minutes',
-    interval: 2,
-  },
-  // this will run every 2 minutes
-  },
-  input: {
-    key1: 'value1',
-    key2: 'value2'
+  custom: {
+    'lambda-cron': {
+      dev: {
+        hello: {
+          schedule: {
+            type: 'interval'
+            params: {
+              unit: 'minute',
+              duration: 2,
+            },
+          }
+        }
+      }
+    }
   }
 }
 ```
 
 ```YAML
-schedule:
-  rate:
-    runRate: days
-    interval: 2
-input:
-  key1: value1
-  key2: value2
-  # this will run every 2 days.
+# hello lambda function will run every 2 days.
+custom:
+  lambda-cron:
+    dev:
+      hello:
+        schedule:
+          type: interval
+          params:
+            unit: days
+            duration: 2
 ```
 
-### Weekly Schedule
+### 2. Daily Schedule
 
-With `weekly` schedule you can run any job on a specific day of the week at a specicifix time of the day.
+With `daily` schedule you can run a job at any time of the day.
 
-- **`day`**: Day of the week raanges from 1-7. (`1` = Sunday, `7` = Saturday, `required`)
-  - `1` is Sunday
-  - `2` is Monday
-  - `3` is Tuesday
-  - `4` is Wednesay
-  - `5` is Thursday
-  - `6` is Friday
-  - `7` is Saturday
-- **`hours`**: Hour of the day (24-hour format, `optional`, defaults to 0).
-- **`minutes`**: Minute of the hour (`optional`, defaults to 0).
+- **`hour`**: _`required`, Hour of the day in 24-hour format.
+- **`minute`**: _`optional`_, Minute of the hour, value can range from 1 to 59. Defaults to 0 if not provided.
 
 ```typescript
-schedule:{
-  weekly: {
-    day: <day-of-the-week>, // required, starts to 1
-    hours: <hour-of-the-day>, // optional, defaults to 0
-    minutes: <minute-of-the-hour>, // optional, defaults to 0
+{
+  schedule: {
+    type: 'daily'
+    params: {
+      hour: <hour-of-the-day>, // required
+      minute: <minute-of-the-hour>, // optional, defaults to 0
+    }
   }
 }
 ```
 
 ```yaml
 schedule:
-  weekly:
-    day: <day-of-the-week> # required, starts at 1
-    hours: <hour-of-the-day> # optional, defaults to 0
-    minutes: <minute-of-the-hour> # optional, defaults to 0
+  type: daily
+  params:
+    hour: <hour-of-the-day> # required
+    minute: <minute-of-the-hour> # optional, defaults to 0
 ```
 
-### Monthly Schedule
+### 3. Weekly Schedule
 
-With `monthly` schedule you can run any job on a specific day of the month at a specific time of the day.
+With `weekly` schedule you can run any job on a specific day of the week at a specicifix time of the day.
 
-- **`day`**: Day of the montn.(raanges from 1-31, `required`)
-- **`hours`**: Hour of the day (24-hour format, `optional`, defaults to 0).
-- **`minutes`**: Minute of the hour (`optional`, defaults to 0).
+- **`day`**: *`required`* Simply put the day i.e `sunday`, `monday`
+- **`hour`**: *`optional`* Hour of the day (24-hour format, ``, defaults to 0).
+- **`minute`**: *`optional`* Minute of the hour (`optional`, defaults to 0).
 
 ```typescript
 schedule:{
-  monthly: {
+  type: 'weekly'
+  params: {
+    day: <day-of-the-week>, // required
+    hour: <hour-of-the-day>, // optional, defaults to 0
+    minute: <minute-of-the-hour>, // optional, defaults to 0
+  }
+}
+```
+
+```yaml
+schedule:
+  type: weekly
+  params:
+    day: <day-of-the-week> # required, starts at 1
+    hour: <hour-of-the-day> # optional, defaults to 0
+    minute: <minute-of-the-hour> # optional, defaults to 0
+```
+
+### 4. Monthly Schedule
+
+With `monthly` schedule you can run any job on a specific day of the month at a specific time of the day.
+
+- **`day`**: *`required`* Day of the month,ranges from 1-31.
+- **`hour`**: *`optional`* Hour of the day in 24-hour format. Defaults to 0 if not provided.
+- **`minute`**: *`optional`* Minute of the hour. Defaults to 0 if not provided.
+
+```typescript
+schedule:{
+  type: 'monthly',
+  params: {
     day: <day-of-the-week>, // required, starts to 1
-    hours: <hour-of-the-day>, // optional, defaults to 0
-    minutes: <minute-of-the-hour>, // optional, defaults to 0
+    hour: <hour-of-the-day>, // optional, defaults to 0
+    minute: <minute-of-the-hour>, // optional, defaults to 0
   }
 }
 ```
@@ -147,8 +178,8 @@ schedule:{
 schedule:
   monthly:
     day: <day-of-the-week> # required, starts at 1
-    hours: <hour-of-the-day> # optional, defaults to 0
-    minutes: <minute-of-the-hour> # optional, defaults to 0
+    hour: <hour-of-the-day> # optional, defaults to 0
+    minute: <minute-of-the-hour> # optional, defaults to 0
 ```
 
 ## Configuration Example
