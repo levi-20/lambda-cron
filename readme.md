@@ -7,7 +7,7 @@
 [![NPM version](https://img.shields.io/npm/v/lambda-cron.svg)](https://www.npmjs.com/package/lambda-cron)
 [![Build](https://github.com/levi-20/cronify/actions/workflows/npm-publish.yml/badge.svg)](https://github.com/levi-20/cronify/actions/workflows/npm-publish.yml)
 
-### Serverless Plugin for Scheduling Lambda Cron Jobs
+## Serverless Plugin for Scheduling Lambda Cron Jobs
 
 This plugin enables you to schedule Lambda functions with a variety of cron job frequencies. It supports different stages (`dev`, `test`, `production`) with options for various timing intervals such as minutes, daily, weekly, and monthly schedules.
 
