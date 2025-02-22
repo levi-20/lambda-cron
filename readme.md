@@ -1,5 +1,4 @@
 <!-- @format -->
->This documentation is applicable only for [v1.6](https://github.com/levi-20/lambda-cron/tree/d25dd42d8d4c227c83bc56e46526c0ad7167549d) and earlier. For latest docs [go here](https://github.com/levi-20/lambda-cron/blob/main/readme.md)
 
 > **For version [v1.6](https://github.com/levi-20/lambda-cron/releases/tag/0.1.6) or earlier, go [here](https://github.com/levi-20/lambda-cron/tree/9a19b5391d00ee46e322f37f67573b37ead3f0e7).**
 
@@ -8,7 +7,6 @@
 [![NPM version](https://img.shields.io/npm/v/lambda-cron.svg)](https://www.npmjs.com/package/lambda-cron)
 [![Build](https://github.com/levi-20/cronify/actions/workflows/npm-publish.yml/badge.svg)](https://github.com/levi-20/cronify/actions/workflows/npm-publish.yml)
 
-## Serverless Plugin for Scheduling Lambda Cron Jobs
 ## Serverless Plugin for Scheduling Lambda Cron Jobs
 
 This plugin enables you to schedule Lambda functions with a variety of cron job frequencies. It supports different stages (`dev`, `test`, `production`) with options for various timing intervals such as minutes, daily, weekly, and monthly schedules.
@@ -170,7 +168,6 @@ schedule:
 
 Below is an example of how to configure the `lambda-cron` plugin for the `dev` stage:
 
-### TypeScript Example
 ### TypeScript Example
 
 ```typescript
