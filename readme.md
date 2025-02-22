@@ -1,6 +1,6 @@
 <!-- @format -->
 
-> **For version [v1.6](https://github.com/levi-20/lambda-cron/releases/tag/0.1.6) or earlier, go [here](https://github.com/levi-20/lambda-cron/tree/9a19b5391d00ee46e322f37f67573b37ead3f0e7).**
+> **For version [v0.1.6](https://github.com/levi-20/lambda-cron/releases/tag/0.1.6) or earlier, go [here](https://github.com/levi-20/lambda-cron/tree/9a19b5391d00ee46e322f37f67573b37ead3f0e7).**
 
 # Cron Jobs for Serverless Lambda
 
