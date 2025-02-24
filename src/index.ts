@@ -159,8 +159,8 @@ export default class LambdaCronJobs {
 		// Added scheduled event to lambda
 		currentFunction.events = [...currentFunction.events, ...cronSchedules];
 		console.log('scheduled cron for: ', {
-					function: functionName,
-					schedule: cronJobConfig.schedule,
+			function: functionName,
+			schedule: cronJobConfig.schedule,
 		});
 	}
 
@@ -324,18 +324,17 @@ export default class LambdaCronJobs {
 		const MONTH = yearly.month;
 
 		if (typeof MONTH != 'number' || MONTH < 1 || MONTH > 12)
-			throw new Error(
-				'Invalid param: month must be a number be between 1 and 12'
-			);
+			throw new Error('Invalid param: month must be a number between 1 and 12');
 
-		if (yearly?.day) {
+		if (yearly?.day || yearly.day == 0) {
+			const maxDays = this.getMaxDays(yearly.month);
 			if (
 				typeof yearly.day != 'number' ||
 				yearly.day < 1 ||
-				yearly.day > this.getMaxDays(yearly.month)
+				yearly.day > maxDays
 			)
 				throw new Error(
-					'Invalid param: day must be a number for monthly schedule between 1 and 31'
+					`Invalid param: day must be a number for yearly schedule between 1 and ${maxDays}`
 				);
 		} else
 			log(
@@ -382,8 +381,8 @@ export default class LambdaCronJobs {
 		return maxDays;
 	}
 
-	private isLeapYear() {
-		const year = new Date().getFullYear();
+	public isLeapYear(year?: number) {
+		if (!year) year = new Date().getFullYear();
 		return (year % 4 == 0 && year % 100 != 0) || year % 400 == 0;
 	}
 }
