@@ -44,6 +44,10 @@ const slsConfigWithoutPluginConfig = {
 } as unknown as any;
 
 describe('Simple Validation', () => {
+	beforeEach(() => {
+		jest.clearAllMocks();
+	});
+
 	it('No cron config', () => {
 		const logSpy = jest.spyOn(console, 'log').mockImplementationOnce(() => {});
 		const lambdaCron = new LambdaCronJobs(
@@ -74,6 +78,9 @@ describe('Simple Validation', () => {
 });
 
 describe('Interval based schedule', () => {
+	beforeEach(() => {
+		jest.clearAllMocks();
+	});
 	// for schedule object validation
 	it('unit is not provided', () => {
 		const lambdaCron = getLambdaCronInstance({
@@ -148,6 +155,7 @@ describe('Interval based schedule', () => {
 	});
 
 	it('valid schedule cron job for every 20 minute', () => {
+		const logSpy = jest.spyOn(console, 'log').mockImplementation(() => {});
 		const lambdaCron = getLambdaCronInstance({
 			type: 'interval',
 			params: {
@@ -155,27 +163,18 @@ describe('Interval based schedule', () => {
 				duration: 20,
 			},
 		});
-
-		const result = lambdaCron.getScheduleEvent({
-			schedule: {
-				type: 'interval' as unknown as CrontType,
-				params: {
-					unit: 'minute',
-					duration: 20,
-				},
-			},
+		lambdaCron.hooks[BEFORE_PACKAGE_HOOK]();
+		expect(logSpy).toHaveBeenCalledWith('scheduled cron for: ', {
+			function: 'hello',
+			schedule: { params: { unit: 'minute', duration: 20 }, type: 'interval' },
 		});
-		expect(result).toEqual([
-			{
-				schedule: {
-					rate: ['rate(20 minute)'],
-				},
-			},
-		]);
 	});
 });
 
 describe('Daily Schedule', () => {
+	beforeEach(() => {
+		jest.clearAllMocks();
+	});
 	it('Missing param: hour', () => {
 		const lambdaCron = getLambdaCronInstance({
 			type: 'daily',
@@ -270,22 +269,10 @@ describe('Daily Schedule', () => {
 			},
 		});
 
-		const result = lambdaCron.getScheduleEvent({
-			schedule: {
-				type: 'daily' as unknown as CrontType,
-				params: {
-					hour: 2,
-				},
-			},
-		});
-		expect(logSpy).toHaveBeenCalled();
-		expect(result).toEqual([
-			{
-				schedule: {
-					rate: ['cron(0 2 * * ? *)'],
-				},
-			},
-		]);
+		lambdaCron.hooks[BEFORE_PACKAGE_HOOK]();
+		expect(logSpy).toHaveBeenCalledWith(
+			'minute is not provided in params default value is set to 0'
+		);
 	});
 
 	it('Valid: minute and hour provided', () => {
@@ -297,27 +284,19 @@ describe('Daily Schedule', () => {
 				minute: 30,
 			},
 		});
-		const result = lambdaCron.getScheduleEvent({
-			schedule: {
-				type: 'daily' as unknown as CrontType,
-				params: {
-					hour: 2,
-					minute: 30,
-				},
-			},
+
+		lambdaCron.hooks[BEFORE_PACKAGE_HOOK]();
+		expect(logSpy).toHaveBeenCalledWith('scheduled cron for: ', {
+			function: 'hello',
+			schedule: { params: { hour: 2, minute: 30 }, type: 'daily' },
 		});
-		expect(logSpy).toHaveBeenCalled();
-		expect(result).toEqual([
-			{
-				schedule: {
-					rate: ['cron(30 2 * * ? *)'],
-				},
-			},
-		]);
 	});
 });
 
 describe('Weekly Schedule', () => {
+	beforeEach(() => {
+		jest.clearAllMocks();
+	});
 	it('Missing param: day', () => {
 		const lambdaCron = getLambdaCronInstance({
 			type: 'weekly',
@@ -443,24 +422,19 @@ describe('Weekly Schedule', () => {
 				day: 'sunday',
 			},
 		});
+		lambdaCron.hooks[BEFORE_PACKAGE_HOOK]();
 
-		const result = lambdaCron.getScheduleEvent({
-			schedule: {
-				type: 'weekly' as unknown as CrontType,
-				params: {
-					day: 'sunday',
-				},
-			},
+		expect(logSpy.mock.calls).toHaveLength(3);
+		expect(logSpy.mock.calls[0][0]).toBe(
+			'hour is not provided in params default value is set to 0'
+		);
+		expect(logSpy.mock.calls[1][0]).toBe(
+			'minute is not provided in params default value is set to 0'
+		);
+		expect(logSpy).toHaveBeenLastCalledWith('scheduled cron for: ', {
+			function: 'hello',
+			schedule: { params: { day: 'sunday' }, type: 'weekly' },
 		});
-
-		expect(logSpy).toHaveBeenCalled();
-		expect(result).toEqual([
-			{
-				schedule: {
-					rate: ['cron(0 0 ? * 1 *)'],
-				},
-			},
-		]);
 	});
 
 	it('Valid: minute is not provided', () => {
@@ -472,45 +446,36 @@ describe('Weekly Schedule', () => {
 				hour: 2,
 			},
 		});
-		const result = lambdaCron.getScheduleEvent({
-			schedule: {
-				type: 'weekly' as unknown as CrontType,
-				params: {
-					day: 'sunday',
-					hour: 2,
-				},
-			},
+		lambdaCron.hooks[BEFORE_PACKAGE_HOOK]();
+		expect(logSpy.mock.calls).toHaveLength(2);
+		expect(logSpy.mock.calls[0][0]).toBe(
+			'minute is not provided in params default value is set to 0'
+		);
+		expect(logSpy).toHaveBeenCalledWith('scheduled cron for: ', {
+			function: 'hello',
+			schedule: { params: { day: 'sunday', hour: 2 }, type: 'weekly' },
 		});
-		expect(logSpy).toHaveBeenCalled();
-		expect(result).toEqual([
-			{
-				schedule: {
-					rate: ['cron(0 2 ? * 1 *)'],
-				},
-			},
-		]);
 	});
 
 	it('Valid: hour is not provided', () => {
 		const logSpy = jest.spyOn(console, 'log').mockImplementation(() => {});
-		const lambdaCron = getLambdaCronInstance();
-		const result = lambdaCron.getScheduleEvent({
-			schedule: {
-				type: 'weekly' as unknown as CrontType,
-				params: {
-					day: 'sunday',
-					minute: 2,
-				},
+		const lambdaCron = getLambdaCronInstance({
+			type: 'weekly' as unknown as CrontType,
+			params: {
+				day: 'sunday',
+				minute: 2,
 			},
 		});
-		expect(logSpy).toHaveBeenCalled();
-		expect(result).toEqual([
-			{
-				schedule: {
-					rate: ['cron(2 0 ? * 1 *)'],
-				},
-			},
-		]);
+
+		lambdaCron.hooks[BEFORE_PACKAGE_HOOK]();
+		expect(logSpy.mock.calls).toHaveLength(2);
+		expect(logSpy).toHaveBeenCalledWith(
+			'hour is not provided in params default value is set to 0'
+		);
+		expect(logSpy).toHaveBeenCalledWith('scheduled cron for: ', {
+			function: 'hello',
+			schedule: { params: { day: 'sunday', minute: 2 }, type: 'weekly' },
+		});
 	});
 
 	it('Valid: Every Sunday at 15:45', () => {
@@ -519,31 +484,25 @@ describe('Weekly Schedule', () => {
 			type: 'weekly',
 			params: {
 				day: 'sunday',
-				hour: 2,
+				hour: 15,
+				minute: 45,
 			},
 		});
-		const result = lambdaCron.getScheduleEvent({
+		lambdaCron.hooks[BEFORE_PACKAGE_HOOK]();
+		expect(logSpy).toHaveBeenCalledWith('scheduled cron for: ', {
+			function: 'hello',
 			schedule: {
-				type: 'weekly' as unknown as CrontType,
-				params: {
-					day: 'sunday',
-					hour: 15,
-					minute: 45,
-				},
+				params: { day: 'sunday', hour: 15, minute: 45 },
+				type: 'weekly',
 			},
 		});
-		expect(logSpy).toHaveBeenCalled();
-		expect(result).toEqual([
-			{
-				schedule: {
-					rate: ['cron(45 15 ? * 1 *)'],
-				},
-			},
-		]);
 	});
 });
 
 describe('monthly Schedule', () => {
+	beforeEach(() => {
+		jest.clearAllMocks();
+	});
 	it('Missing param: day', () => {
 		const lambdaCron = getLambdaCronInstance({
 			type: 'monthly',
@@ -679,47 +638,45 @@ describe('monthly Schedule', () => {
 
 	it('Valid: hour and minute not provided', () => {
 		const logSpy = jest.spyOn(console, 'log').mockImplementation(() => {});
-		const lambdaCron = getLambdaCronInstance();
-
-		const result = lambdaCron.getScheduleEvent({
-			schedule: {
-				type: 'monthly' as unknown as CrontType,
-				params: {
-					day: 3,
-				},
+		const lambdaCron = getLambdaCronInstance({
+			type: 'monthly' as unknown as CrontType,
+			params: {
+				day: 3,
 			},
 		});
-
-		expect(logSpy).toHaveBeenCalled();
-		expect(result).toEqual([
-			{
-				schedule: {
-					rate: ['cron(0 0 3 * ? *)'],
-				},
-			},
-		]);
+		lambdaCron.hooks[BEFORE_PACKAGE_HOOK]();
+		expect(logSpy.mock.calls).toHaveLength(3);
+		expect(logSpy.mock.calls[0][0]).toBe(
+			'hour is not provided in params default value is set to 0'
+		);
+		expect(logSpy.mock.calls[1][0]).toBe(
+			'minute is not provided in params default value is set to 0'
+		);
+		expect(logSpy).toHaveBeenLastCalledWith('scheduled cron for: ', {
+			function: 'hello',
+			schedule: { params: { day: 3 }, type: 'monthly' },
+		});
 	});
 
 	it('Valid: minute is not provided', () => {
 		const logSpy = jest.spyOn(console, 'log').mockImplementation(() => {});
-		const lambdaCron = getLambdaCronInstance();
-		const result = lambdaCron.getScheduleEvent({
-			schedule: {
-				type: 'monthly' as unknown as CrontType,
-				params: {
-					day: 2,
-					hour: 15,
-				},
+		const lambdaCron = getLambdaCronInstance({
+			type: 'monthly' as unknown as CrontType,
+			params: {
+				day: 2,
+				hour: 15,
 			},
 		});
-		expect(logSpy).toHaveBeenCalled();
-		expect(result).toEqual([
-			{
-				schedule: {
-					rate: ['cron(0 15 2 * ? *)'],
-				},
-			},
-		]);
+
+		lambdaCron.hooks[BEFORE_PACKAGE_HOOK]();
+		expect(logSpy.mock.calls).toHaveLength(2);
+		expect(logSpy.mock.calls[0][0]).toBe(
+			'minute is not provided in params default value is set to 0'
+		);
+		expect(logSpy).toHaveBeenLastCalledWith('scheduled cron for: ', {
+			function: 'hello',
+			schedule: { params: { day: 2, hour: 15 }, type: 'monthly' },
+		});
 	});
 
 	it('Valid: hour is not provided', () => {
@@ -727,52 +684,41 @@ describe('monthly Schedule', () => {
 		const lambdaCron = getLambdaCronInstance({
 			type: 'monthly',
 			params: {
-				day: 'sunday',
-				hour: 2,
+				day: 12,
+				minute: 34,
 			},
 		});
-		const result = lambdaCron.getScheduleEvent({
-			schedule: {
-				type: 'monthly' as unknown as CrontType,
-				params: {
-					day: 12,
-					minute: 34,
-				},
-			},
+
+		lambdaCron.hooks[BEFORE_PACKAGE_HOOK]();
+		expect(logSpy.mock.calls).toHaveLength(2);
+		expect(logSpy).toHaveBeenCalledWith(
+			'hour is not provided in params default value is set to 0'
+		);
+		expect(logSpy).toHaveBeenLastCalledWith('scheduled cron for: ', {
+			function: 'hello',
+			schedule: { params: { day: 12, minute: 34 }, type: 'monthly' },
 		});
-		expect(logSpy).toHaveBeenCalled();
-		expect(result).toEqual([
-			{
-				schedule: {
-					rate: ['cron(34 0 12 * ? *)'],
-				},
-			},
-		]);
 	});
 
 	it('Valid: Every 15th at 15:45', () => {
 		const logSpy = jest.spyOn(console, 'log').mockImplementation(() => {});
-		const lambdaCron = getLambdaCronInstance();
-		const result = lambdaCron.getScheduleEvent({
-			schedule: {
-				type: 'monthly' as unknown as CrontType,
-				params: {
-					day: 15,
-					hour: 15,
-					minute: 45,
-				},
+		const lambdaCron = getLambdaCronInstance({
+			type: 'monthly' as unknown as CrontType,
+			params: {
+				day: 15,
+				hour: 15,
+				minute: 45,
 			},
 		});
-		expect(logSpy).toHaveBeenCalled();
-		expect(result).toEqual([
-			{
-				schedule: {
-					rate: ['cron(45 15 15 * ? *)'],
-				},
-			},
-		]);
+
+		lambdaCron.hooks[BEFORE_PACKAGE_HOOK]();
+
+		expect(logSpy).toHaveBeenCalledWith('scheduled cron for: ', {
+			function: 'hello',
+			schedule: { params: { day: 15, hour: 15, minute: 45 }, type: 'monthly' },
+		});
 	});
-	
+
 	it('Valid: Every 16th at 16:16', () => {
 		const logSpy = jest.spyOn(console, 'log').mockImplementation(() => {});
 		const slsConfigWithFunctionWithoutEvents = {
@@ -806,8 +752,14 @@ describe('monthly Schedule', () => {
 			},
 			getProvider: () => ({ name: 'aws' }),
 		} as unknown as any;
-		const lambdaCron = new LambdaCronJobs(slsConfigWithFunctionWithoutEvents, {} as any);
+		const lambdaCron = new LambdaCronJobs(
+			slsConfigWithFunctionWithoutEvents,
+			{} as any
+		);
 		lambdaCron.hooks[BEFORE_PACKAGE_HOOK]();
-		expect(logSpy).toHaveBeenCalled();
+		expect(logSpy).toHaveBeenCalledWith('scheduled cron for: ', {
+			function: 'hello',
+			schedule: { params: { day: 16, hour: 16, minute: 16 }, type: 'monthly' },
+		});
 	});
 });

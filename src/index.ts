@@ -54,6 +54,13 @@ interface Monthly {
 	minute?: number;
 }
 
+interface Yearly {
+	month: number;
+	day: number;
+	hour?: number;
+	minute?: number;
+}
+
 const ALLOWED_INTERVAL_UNIT = ['day', 'hour', 'minute'];
 const ALLOWED_DAYS = [
 	'sunday',
@@ -75,6 +82,24 @@ const DAYS = new Map([
 	['saturday', 7],
 ]);
 
+const MONTHS = new Map([
+	[1, 'January'],
+	[2, 'February'],
+	[3, 'March'],
+	[4, 'April'],
+	[5, 'May'],
+	[6, 'June'],
+	[7, 'July'],
+	[8, 'August'],
+	[9, 'September'],
+	[10, 'October'],
+	[11, 'November'],
+	[12, 'December'],
+]);
+
+export const log = (message: string): void => {
+	console.log(message);
+};
 export default class LambdaCronJobs {
 	functions: Functions;
 	service: any;
@@ -134,8 +159,8 @@ export default class LambdaCronJobs {
 		// Added scheduled event to lambda
 		currentFunction.events = [...currentFunction.events, ...cronSchedules];
 		console.log('scheduled cron for: ', {
-			function: functionName,
-			schedule: cronJobConfig.schedule,
+					function: functionName,
+					schedule: cronJobConfig.schedule,
 		});
 	}
 
@@ -162,6 +187,8 @@ export default class LambdaCronJobs {
 				return this.scheduleWeekly(schedule.params as Weekly);
 			case 'monthly':
 				return this.scheduleMonthly(schedule.params as Monthly);
+			case 'yearly':
+				return this.scheduleYearly(schedule.params as Yearly);
 			default:
 				throw new Error(
 					'Invalid schedule type: cron can be scheduled with only given types: "interval", "daily", "weekly", "monthly".'
@@ -288,5 +315,75 @@ export default class LambdaCronJobs {
 		const hours = monthly?.hour ?? 0;
 		const minutes = monthly?.minute ?? 0;
 		return `cron(${minutes} ${hours} ${day} * ? *)`;
+	}
+
+	private scheduleYearly(yearly: Yearly) {
+		if (!('month' in yearly))
+			throw new Error('Missing param: month is required for yearly schedule');
+
+		const MONTH = yearly.month;
+
+		if (typeof MONTH != 'number' || MONTH < 1 || MONTH > 12)
+			throw new Error(
+				'Invalid param: month must be a number be between 1 and 12'
+			);
+
+		if (yearly?.day) {
+			if (
+				typeof yearly.day != 'number' ||
+				yearly.day < 1 ||
+				yearly.day > this.getMaxDays(yearly.month)
+			)
+				throw new Error(
+					'Invalid param: day must be a number for monthly schedule between 1 and 31'
+				);
+		} else
+			log(
+				'day is not provided in params default value is set to 1st day of the month'
+			);
+
+		if (yearly?.hour) {
+			if (typeof yearly.hour != 'number' || yearly.hour < 0 || yearly.hour > 24)
+				throw new Error(
+					'Invalid param: hour must be a number be between 0 and 24'
+				);
+		} else log('hour is not provided in params default value is set to 0');
+
+		if (yearly.minute) {
+			if (
+				typeof yearly.minute != 'number' ||
+				yearly.minute < 0 ||
+				yearly.minute > 59
+			)
+				throw new Error(
+					'Invalid param: minute must be a number between 0 and 59'
+				);
+		} else log('minute is not provided in params default value is set to 0');
+
+		const day = yearly?.day ?? 1;
+		const hours = yearly?.hour ?? 0;
+		const minutes = yearly?.minute ?? 0;
+		return `cron(${minutes} ${hours} ${day} ${MONTH} ? *)`;
+	}
+
+	private getMaxDays(month: number): number {
+		let maxDays = 31;
+		switch (month) {
+			case 2:
+				maxDays = this.isLeapYear() ? 29 : 28;
+				break;
+			case 4:
+			case 6:
+			case 9:
+			case 11:
+				maxDays = 30;
+				break;
+		}
+		return maxDays;
+	}
+
+	private isLeapYear() {
+		const year = new Date().getFullYear();
+		return (year % 4 == 0 && year % 100 != 0) || year % 400 == 0;
 	}
 }
