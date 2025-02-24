@@ -763,3 +763,497 @@ describe('monthly Schedule', () => {
 		});
 	});
 });
+
+describe('Yearly Schedule', () => {
+	beforeEach(() => {
+		jest.clearAllMocks();
+	});
+	it('Missing param: month', () => {
+		const lambdaCron = getLambdaCronInstance({
+			type: 'yearly',
+			params: {},
+		});
+		expect(() => {
+			lambdaCron.hooks[BEFORE_PACKAGE_HOOK]();
+		}).toThrow('Missing param: month is required for yearly schedule');
+	});
+
+	it('Invalid param: month must be number', () => {
+		const lambdaCron = getLambdaCronInstance({
+			type: 'yearly',
+			params: {
+				month: 'jan',
+			},
+		});
+		expect(() => {
+			lambdaCron.hooks[BEFORE_PACKAGE_HOOK]();
+		}).toThrow('Invalid param: month must be a number between 1 and 12');
+	});
+
+	it('Invalid param: month less than 1', () => {
+		const lambdaCron = getLambdaCronInstance({
+			type: 'yearly',
+			params: {
+				month: 0,
+			},
+		});
+		expect(() => {
+			lambdaCron.hooks[BEFORE_PACKAGE_HOOK]();
+		}).toThrow('Invalid param: month must be a number between 1 and 12');
+	});
+
+	it('Invalid param: month greater than 12', () => {
+		const lambdaCron = getLambdaCronInstance({
+			type: 'yearly',
+			params: {
+				month: 13,
+			},
+		});
+		expect(() => {
+			lambdaCron.hooks[BEFORE_PACKAGE_HOOK]();
+		}).toThrow('Invalid param: month must be a number between 1 and 12');
+	});
+
+	it('Invalid param: day must be a number', () => {
+		const lambdaCron = getLambdaCronInstance({
+			type: 'yearly',
+			params: {
+				month: 1,
+				day: 'sun',
+			},
+		});
+		expect(() => {
+			lambdaCron.hooks[BEFORE_PACKAGE_HOOK]();
+		}).toThrow(
+			'Invalid param: day must be a number for yearly schedule between 1 and 31'
+		);
+	});
+
+	it('Invalid param: day is 0', () => {
+		const lambdaCron = getLambdaCronInstance({
+			type: 'yearly',
+			params: {
+				month: 1,
+				day: 0,
+			},
+		});
+		expect(() => {
+			lambdaCron.hooks[BEFORE_PACKAGE_HOOK]();
+		}).toThrow(
+			'Invalid param: day must be a number for yearly schedule between 1 and 31'
+		);
+	});
+
+	it('Invalid param: day less than 1', () => {
+		const lambdaCron = getLambdaCronInstance({
+			type: 'yearly',
+			params: {
+				month: 1,
+				day: 0,
+			},
+		});
+		expect(() => {
+			lambdaCron.hooks[BEFORE_PACKAGE_HOOK]();
+		}).toThrow(
+			'Invalid param: day must be a number for yearly schedule between 1 and 31'
+		);
+	});
+
+	it('Invalid param: day greater than 31', () => {
+		const lambdaCron = getLambdaCronInstance({
+			type: 'yearly',
+			params: {
+				month: 3,
+				day: 32,
+			},
+		});
+		expect(() => {
+			lambdaCron.hooks[BEFORE_PACKAGE_HOOK]();
+		}).toThrow(
+			'Invalid param: day must be a number for yearly schedule between 1 and 31'
+		);
+	});
+
+	it('Invalid param: day greater than 30 for 30 day month', () => {
+		const lambdaCron = getLambdaCronInstance({
+			type: 'yearly',
+			params: {
+				month: 4,
+				day: 32,
+			},
+		});
+		expect(() => {
+			lambdaCron.hooks[BEFORE_PACKAGE_HOOK]();
+		}).toThrow(
+			'Invalid param: day must be a number for yearly schedule between 1 and 30'
+		);
+	});
+
+	it('Invalid param: day greater than 28 in feb for non leap year', () => {
+		const lambdaCron = getLambdaCronInstance({
+			type: 'yearly',
+			params: {
+				month: 2,
+				day: 32,
+			},
+		});
+		expect(() => {
+			lambdaCron.hooks[BEFORE_PACKAGE_HOOK]();
+		}).toThrow(
+			'Invalid param: day must be a number for yearly schedule between 1 and 28'
+		);
+	});
+
+	it('Invalid param: hour is string', () => {
+		const lambdaCron = getLambdaCronInstance({
+			type: 'yearly',
+			params: {
+				month: 2,
+				day: 2,
+				hour: '2',
+			},
+		});
+		expect(() => {
+			lambdaCron.hooks[BEFORE_PACKAGE_HOOK]();
+		}).toThrow('Invalid param: hour must be a number be between 0 and 24');
+	});
+
+	it('Invalid param: hour less then 0', () => {
+		const lambdaCron = getLambdaCronInstance({
+			type: 'yearly',
+			params: {
+				month: 2,
+				day: 2,
+				hour: -1,
+			},
+		});
+		expect(() => {
+			lambdaCron.hooks[BEFORE_PACKAGE_HOOK]();
+		}).toThrow('Invalid param: hour must be a number be between 0 and 24');
+	});
+
+	it('Invalid param: hour greater than 24', () => {
+		const lambdaCron = getLambdaCronInstance({
+			type: 'yearly',
+			params: {
+				month: 2,
+				day: 2,
+				hour: 26,
+			},
+		});
+		expect(() => {
+			lambdaCron.hooks[BEFORE_PACKAGE_HOOK]();
+		}).toThrow('Invalid param: hour must be a number be between 0 and 24');
+	});
+
+	it('Invalid param: minute is string', () => {
+		const lambdaCron = getLambdaCronInstance({
+			type: 'yearly',
+			params: {
+				month: 2,
+				day: 2,
+				hour: 2,
+				minute: '2',
+			},
+		});
+		expect(() => {
+			lambdaCron.hooks[BEFORE_PACKAGE_HOOK]();
+		}).toThrow('Invalid param: minute must be a number between 0 and 59');
+	});
+
+	it('Invalid param: minute less than 0', () => {
+		const lambdaCron = getLambdaCronInstance({
+			type: 'yearly',
+			params: {
+				month: 2,
+				day: 2,
+				hour: 0,
+				minute: -1,
+			},
+		});
+		expect(() => {
+			lambdaCron.hooks[BEFORE_PACKAGE_HOOK]();
+		}).toThrow('Invalid param: minute must be a number between 0 and 59');
+	});
+
+	it('Invalid param: minute greater than 59', () => {
+		const lambdaCron = getLambdaCronInstance({
+			type: 'yearly',
+			params: {
+				month: 2,
+				day: 2,
+				hour: 2,
+				minute: 60,
+			},
+		});
+		expect(() => {
+			lambdaCron.hooks[BEFORE_PACKAGE_HOOK]();
+		}).toThrow('Invalid param: minute must be a number between 0 and 59');
+	});
+
+	it('Valid: day, hour and minute not provided', () => {
+		const logSpy = jest.spyOn(console, 'log').mockImplementation(() => {});
+		const lambdaCron = getLambdaCronInstance({
+			type: 'yearly' as unknown as CrontType,
+			params: {
+				month: 2,
+			},
+		});
+		lambdaCron.hooks[BEFORE_PACKAGE_HOOK]();
+		expect(logSpy.mock.calls).toHaveLength(4);
+		expect(logSpy.mock.calls[0][0]).toBe(
+			'day is not provided in params default value is set to 1st day of the month'
+		);
+		expect(logSpy.mock.calls[1][0]).toBe(
+			'hour is not provided in params default value is set to 0'
+		);
+		expect(logSpy.mock.calls[2][0]).toBe(
+			'minute is not provided in params default value is set to 0'
+		);
+		expect(logSpy).toHaveBeenLastCalledWith('scheduled cron for: ', {
+			function: 'hello',
+			schedule: { params: { month: 2 }, type: 'yearly' },
+		});
+	});
+
+	it('Valid: day and hour not provided', () => {
+		const logSpy = jest.spyOn(console, 'log').mockImplementation(() => {});
+		const lambdaCron = getLambdaCronInstance({
+			type: 'yearly' as unknown as CrontType,
+			params: {
+				month: 2,
+				minute: 3,
+			},
+		});
+		lambdaCron.hooks[BEFORE_PACKAGE_HOOK]();
+		expect(logSpy.mock.calls).toHaveLength(3);
+		expect(logSpy.mock.calls[0][0]).toBe(
+			'day is not provided in params default value is set to 1st day of the month'
+		);
+		expect(logSpy.mock.calls[1][0]).toBe(
+			'hour is not provided in params default value is set to 0'
+		);
+		expect(logSpy).toHaveBeenLastCalledWith('scheduled cron for: ', {
+			function: 'hello',
+			schedule: { params: { month: 2, minute: 3 }, type: 'yearly' },
+		});
+	});
+
+	it('Valid: day and minute not provided', () => {
+		const logSpy = jest.spyOn(console, 'log').mockImplementation(() => {});
+		const lambdaCron = getLambdaCronInstance({
+			type: 'yearly' as unknown as CrontType,
+			params: {
+				month: 2,
+				hour: 3,
+			},
+		});
+		lambdaCron.hooks[BEFORE_PACKAGE_HOOK]();
+		expect(logSpy.mock.calls).toHaveLength(3);
+		expect(logSpy.mock.calls[0][0]).toBe(
+			'day is not provided in params default value is set to 1st day of the month'
+		);
+		expect(logSpy.mock.calls[1][0]).toBe(
+			'minute is not provided in params default value is set to 0'
+		);
+		expect(logSpy).toHaveBeenLastCalledWith('scheduled cron for: ', {
+			function: 'hello',
+			schedule: { params: { month: 2, hour: 3 }, type: 'yearly' },
+		});
+	});
+
+	it('Valid: day not provided', () => {
+		const logSpy = jest.spyOn(console, 'log').mockImplementation(() => {});
+		const lambdaCron = getLambdaCronInstance({
+			type: 'yearly' as unknown as CrontType,
+			params: {
+				month: 2,
+				hour: 3,
+				minute: 10,
+			},
+		});
+		lambdaCron.hooks[BEFORE_PACKAGE_HOOK]();
+		expect(logSpy.mock.calls).toHaveLength(2);
+		expect(logSpy.mock.calls[0][0]).toBe(
+			'day is not provided in params default value is set to 1st day of the month'
+		);
+
+		expect(logSpy).toHaveBeenLastCalledWith('scheduled cron for: ', {
+			function: 'hello',
+			schedule: { params: { month: 2, hour: 3, minute: 10 }, type: 'yearly' },
+		});
+	});
+
+	it('Valid: hour and minute not provided', () => {
+		const logSpy = jest.spyOn(console, 'log').mockImplementation(() => {});
+		const lambdaCron = getLambdaCronInstance({
+			type: 'yearly' as unknown as CrontType,
+			params: {
+				month: 2,
+				day: 3,
+			},
+		});
+		lambdaCron.hooks[BEFORE_PACKAGE_HOOK]();
+		expect(logSpy.mock.calls).toHaveLength(3);
+		expect(logSpy.mock.calls[0][0]).toBe(
+			'hour is not provided in params default value is set to 0'
+		);
+		expect(logSpy.mock.calls[1][0]).toBe(
+			'minute is not provided in params default value is set to 0'
+		);
+		expect(logSpy).toHaveBeenLastCalledWith('scheduled cron for: ', {
+			function: 'hello',
+			schedule: { params: { month: 2, day: 3 }, type: 'yearly' },
+		});
+	});
+
+	it('Valid: hour is not provided', () => {
+		const logSpy = jest.spyOn(console, 'log').mockImplementation(() => {});
+		const lambdaCron = getLambdaCronInstance({
+			type: 'yearly',
+			params: {
+				month: 2,
+				day: 12,
+				minute: 34,
+			},
+		});
+
+		lambdaCron.hooks[BEFORE_PACKAGE_HOOK]();
+		expect(logSpy.mock.calls).toHaveLength(2);
+		expect(logSpy).toHaveBeenCalledWith(
+			'hour is not provided in params default value is set to 0'
+		);
+		expect(logSpy).toHaveBeenLastCalledWith('scheduled cron for: ', {
+			function: 'hello',
+			schedule: { params: { month: 2, day: 12, minute: 34 }, type: 'yearly' },
+		});
+	});
+
+	it('Valid: minute is not provided', () => {
+		const logSpy = jest.spyOn(console, 'log').mockImplementation(() => {});
+		const lambdaCron = getLambdaCronInstance({
+			type: 'yearly' as unknown as CrontType,
+			params: {
+				month: 2,
+				day: 2,
+				hour: 15,
+			},
+		});
+
+		lambdaCron.hooks[BEFORE_PACKAGE_HOOK]();
+		expect(logSpy.mock.calls).toHaveLength(2);
+		expect(logSpy.mock.calls[0][0]).toBe(
+			'minute is not provided in params default value is set to 0'
+		);
+		expect(logSpy).toHaveBeenLastCalledWith('scheduled cron for: ', {
+			function: 'hello',
+			schedule: { params: { month: 2, day: 2, hour: 15 }, type: 'yearly' },
+		});
+	});
+
+	it('Valid: Every 29th feb at 15:45 of a leap year', () => {
+		const logSpy = jest.spyOn(console, 'log').mockImplementation(() => {});
+
+		const lambdaCron = getLambdaCronInstance({
+			type: 'yearly' as unknown as CrontType,
+			params: {
+				month: 2,
+				day: 29,
+				hour: 15,
+				minute: 45,
+			},
+		});
+		lambdaCron.isLeapYear = jest.fn().mockImplementationOnce(() => {
+			return true;
+		});
+		lambdaCron.hooks[BEFORE_PACKAGE_HOOK]();
+
+		expect(logSpy).toHaveBeenCalledWith('scheduled cron for: ', {
+			function: 'hello',
+			schedule: {
+				type: 'yearly',
+				params: { month: 2, day: 29, hour: 15, minute: 45 },
+			},
+		});
+	});
+
+	it('Valid: Every 16th of Feb at 16:16', () => {
+		const logSpy = jest.spyOn(console, 'log').mockImplementation(() => {});
+		const slsConfigWithFunctionWithoutEvents = {
+			service: {
+				provider: {
+					name: 'aws',
+					stage: 'dev',
+				},
+				custom: {
+					'lambda-cron': {
+						dev: {
+							hello: {
+								schedule: {
+									type: 'yearly' as unknown as CrontType,
+									params: {
+										month: 2,
+										day: 16,
+										hour: 16,
+										minute: 16,
+									},
+								},
+							},
+						},
+					},
+				},
+				functions: {
+					hello: {
+						handler: '.src/handler.hello',
+						name: 'hello',
+					},
+				},
+			},
+			getProvider: () => ({ name: 'aws' }),
+		} as unknown as any;
+		const lambdaCron = new LambdaCronJobs(
+			slsConfigWithFunctionWithoutEvents,
+			{} as any
+		);
+		lambdaCron.hooks[BEFORE_PACKAGE_HOOK]();
+		expect(logSpy).toHaveBeenCalledWith('scheduled cron for: ', {
+			function: 'hello',
+			schedule: {
+				params: { month: 2, day: 16, hour: 16, minute: 16 },
+				type: 'yearly',
+			},
+		});
+	});
+
+	it('Valid: 2000 is a Leap Year', () => {
+		const logSpy = jest.spyOn(console, 'log').mockImplementation(() => {});
+		const lambdaCron = getLambdaCronInstance();
+
+		const result = lambdaCron.isLeapYear(2000);
+		expect(result).toBe(true);
+	});
+	
+	it('Valid: 2024 is a Leap Year', () => {
+		const logSpy = jest.spyOn(console, 'log').mockImplementation(() => {});
+		const lambdaCron = getLambdaCronInstance();
+
+		const result = lambdaCron.isLeapYear(2024);
+		expect(result).toBe(true);
+	});
+	
+	it('Valid: 1000 is a Leap Year', () => {
+		const logSpy = jest.spyOn(console, 'log').mockImplementation(() => {});
+		const lambdaCron = getLambdaCronInstance();
+
+		const result = lambdaCron.isLeapYear(1000);
+		expect(result).toBe(false);
+	});
+	
+	it('Valid: 2025 is a Leap Year', () => {
+		const logSpy = jest.spyOn(console, 'log').mockImplementation(() => {});
+		const lambdaCron = getLambdaCronInstance();
+
+		const result = lambdaCron.isLeapYear(1000);
+		expect(result).toBe(false);
+	});
+});
