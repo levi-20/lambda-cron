@@ -5,7 +5,7 @@
 # Cron Jobs for Serverless Lambda
 
 [![NPM version](https://img.shields.io/npm/v/lambda-cron.svg)](https://www.npmjs.com/package/lambda-cron)
-[![Build](https://github.com/levi-20/cronify/actions/workflows/npm-publish.yml/badge.svg)](https://github.com/levi-20/cronify/actions/workflows/npm-publish.yml)
+[![Build](https://github.com/levi-20/cronify/actions/workflows/ci.yml/badge.svg)](https://github.com/levi-20/cronify/actions/workflows/ci.yml)
 
 ## Serverless Plugin for Scheduling Lambda Cron Jobs
 
