@@ -1,5 +1,5 @@
 # @format
-name: CI/Push
+name: build
 
 on:
   push:
