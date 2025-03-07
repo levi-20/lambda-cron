@@ -56,7 +56,7 @@ describe('Simple Validation', () => {
 		);
 		lambdaCron.hooks[BEFORE_PACKAGE_HOOK]();
 		expect(logSpy).toHaveBeenCalledWith(
-			'No cron job configurations found for stage dev'
+			'lambda:cron: No cron job configurations found for stage dev'
 		);
 	});
 
