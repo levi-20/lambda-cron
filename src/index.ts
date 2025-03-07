@@ -61,7 +61,7 @@ interface Yearly {
 	minute?: number;
 }
 
-const ALLOWED_INTERVAL_UNIT = ['day', 'hour', 'minute'];
+const ALLOWED_INTERVAL_UNIT = ['minutes', 'hours', 'days'];
 const ALLOWED_DAYS = [
 	'sunday',
 	'monday',
@@ -82,24 +82,6 @@ const DAYS = new Map([
 	['saturday', 7],
 ]);
 
-const MONTHS = new Map([
-	[1, 'January'],
-	[2, 'February'],
-	[3, 'March'],
-	[4, 'April'],
-	[5, 'May'],
-	[6, 'June'],
-	[7, 'July'],
-	[8, 'August'],
-	[9, 'September'],
-	[10, 'October'],
-	[11, 'November'],
-	[12, 'December'],
-]);
-
-export const log = (message: string): void => {
-	console.log(message);
-};
 export default class LambdaCronJobs {
 	functions: Functions;
 	service: any;
@@ -158,7 +140,7 @@ export default class LambdaCronJobs {
 		const cronSchedules: Aws.Event[] = this.getScheduleEvent(cronJobConfig);
 		// Added scheduled event to lambda
 		currentFunction.events = [...currentFunction.events, ...cronSchedules];
-		console.log('scheduled cron for: ', {
+		console.log('lambda-cron: scheduled cron for: ', {
 			function: functionName,
 			schedule: cronJobConfig.schedule,
 		});
@@ -206,7 +188,7 @@ export default class LambdaCronJobs {
 		else if (!ALLOWED_INTERVAL_UNIT.includes(interval.unit))
 			throw new Error(
 				'Invalid param: Invalid unit provided. Valid units are: ' +
-					ALLOWED_INTERVAL_UNIT.toString()
+					ALLOWED_INTERVAL_UNIT.toString().replaceAll(',', ', ')
 			);
 		else if (typeof interval.duration != 'number')
 			throw new Error('Invalid param: interval duration must be a number');
@@ -231,7 +213,7 @@ export default class LambdaCronJobs {
 					'Invalid param: minute must be a number between 0 and 59'
 				);
 		} else {
-			console.log('minute is not provided in params default value is set to 0');
+			console.log('lambda-cron: minute is not provided in params default value is set to 0');
 		}
 
 		const hours = daily.hour;
@@ -258,7 +240,7 @@ export default class LambdaCronJobs {
 					'Invalid param: hour must be a number be between 0 and 24'
 				);
 		} else
-			console.log('hour is not provided in params default value is set to 0');
+			console.log('lambda-cron: hour is not provided in params default value is set to 0');
 
 		if (weekly.minute) {
 			if (
@@ -270,7 +252,7 @@ export default class LambdaCronJobs {
 					'Invalid param: minute must be a number between 0 and 59'
 				);
 		} else
-			console.log('minute is not provided in params default value is set to 0');
+			console.log('lambda-cron: minute is not provided in params default value is set to 0');
 
 		const day = weekly.day.toLowerCase();
 		const hours = weekly?.hour ?? 0;
@@ -297,7 +279,7 @@ export default class LambdaCronJobs {
 					'Invalid param: hour must be a number be between 0 and 24'
 				);
 		} else
-			console.log('hour is not provided in params default value is set to 0');
+			console.log('lambda-cron: hour is not provided in params default value is set to 0');
 
 		if (monthly.minute) {
 			if (
@@ -309,7 +291,7 @@ export default class LambdaCronJobs {
 					'Invalid param: minute must be a number between 0 and 59'
 				);
 		} else
-			console.log('minute is not provided in params default value is set to 0');
+			console.log('lambda-cron: minute is not provided in params default value is set to 0');
 
 		const day = monthly.day;
 		const hours = monthly?.hour ?? 0;
@@ -337,7 +319,7 @@ export default class LambdaCronJobs {
 					`Invalid param: day must be a number for yearly schedule between 1 and ${maxDays}`
 				);
 		} else
-			log(
+			console.log(
 				'day is not provided in params default value is set to 1st day of the month'
 			);
 
@@ -346,7 +328,8 @@ export default class LambdaCronJobs {
 				throw new Error(
 					'Invalid param: hour must be a number be between 0 and 24'
 				);
-		} else log('hour is not provided in params default value is set to 0');
+		} else
+			console.log('lambda-cron: hour is not provided in params default value is set to 0');
 
 		if (yearly.minute) {
 			if (
@@ -357,7 +340,8 @@ export default class LambdaCronJobs {
 				throw new Error(
 					'Invalid param: minute must be a number between 0 and 59'
 				);
-		} else log('minute is not provided in params default value is set to 0');
+		} else
+			console.log('lambda-cron: minute is not provided in params default value is set to 0');
 
 		const day = yearly?.day ?? 1;
 		const hours = yearly?.hour ?? 0;
