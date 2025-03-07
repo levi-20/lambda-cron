@@ -5,7 +5,7 @@
 # Cron Jobs for Serverless Lambda
 
 [![NPM version](https://img.shields.io/npm/v/lambda-cron.svg)](https://www.npmjs.com/package/lambda-cron)
-[![Build](https://github.com/levi-20/cronify/actions/workflows/npm-publish.yml/badge.svg)](https://github.com/levi-20/cronify/actions/workflows/npm-publish.yml)
+[![Build](https://github.com/levi-20/cronify/actions/workflows/ci.yml/badge.svg)](https://github.com/levi-20/cronify/actions/workflows/ci.yml)
 
 ## Serverless Plugin for Scheduling Lambda Cron Jobs
 
@@ -58,13 +58,13 @@ This plugin enables you to schedule Lambda functions with a variety of cron job 
 
 ### Interval-Based Schedule
 
-You can schedule a Lambda function to run at specific intervals. For example, a job with the unit `minute` will run every `x` minutes.
+You can schedule a Lambda function to run at specific intervals. For example, a job with the unit `minutes` will run every `x` minutes.
 
 **`unit`**: _`required`_ - Interval unit can be one of the following:
 
-- `day`
-- `hour`
-- `minute`
+- `days`
+- `hours`
+- `minutes`
 
 **`duration`**: _`required`_ - Time interval after which the job will run again.
 
@@ -78,7 +78,7 @@ You can schedule a Lambda function to run at specific intervals. For example, a 
           schedule: {
             type: 'interval',
             params: {
-              unit: 'minute',
+              unit: 'minutes',
               duration: 2,
             },
           },
@@ -98,7 +98,7 @@ custom:
         schedule:
           type: interval
           params:
-            unit: day
+            unit: days
             duration: 2
 ```
 
@@ -121,7 +121,6 @@ With a `daily` schedule, you can run a job at a specific time of the day.
 }
 ```
 
-```yaml
 ```yaml
 schedule:
   type: daily
@@ -160,6 +159,25 @@ schedule:
   type: monthly
   params:
     day: <day-of-the-month> # required
+    hour: <hour-of-the-day> # optional, defaults to 0
+    minute: <minute-of-the-hour> # optional, defaults to 0
+```
+
+### Yearly Schedule
+
+With a `yearly` schedule, you can run a job on a specific day of the year at a specified time.
+
+- **`month`**: _`required`_ - Month of the year (1-12).
+- **`day`**: _`optional`_ - Day of the month 1-31. (defaults to 1)
+- **`hour`**: _`optional`_ - Hour of the day in 24-hour format (defaults to 0).
+- **`minute`**: _`optional`_ - Minute of the hour (defaults to 0).
+
+```yaml
+schedule:
+  type: yearly
+  params:
+    month: <month-oof-the-year> # required
+    day: <day-of-the-month> # optional, defaults to 1
     hour: <hour-of-the-day> # optional, defaults to 0
     minute: <minute-of-the-hour> # optional, defaults to 0
 ```

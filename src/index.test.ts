@@ -56,7 +56,7 @@ describe('Simple Validation', () => {
 		);
 		lambdaCron.hooks[BEFORE_PACKAGE_HOOK]();
 		expect(logSpy).toHaveBeenCalledWith(
-			'No cron job configurations found for stage dev'
+			'lambda:cron: No cron job configurations found for stage dev'
 		);
 	});
 
@@ -136,7 +136,7 @@ describe('Interval based schedule', () => {
 		expect(() => {
 			lambdaCron.hooks[BEFORE_PACKAGE_HOOK]();
 		}).toThrow(
-			'Invalid param: Invalid unit provided. Valid units are: day,hour,minute'
+			'Invalid param: Invalid unit provided. Valid units are: minutes, hours, days'
 		);
 	});
 
@@ -144,7 +144,7 @@ describe('Interval based schedule', () => {
 		const lambdaCron = getLambdaCronInstance({
 			type: 'interval',
 			params: {
-				unit: 'minute',
+				unit: 'minutes',
 				duration: 'invalid',
 			},
 		});
@@ -154,19 +154,51 @@ describe('Interval based schedule', () => {
 		}).toThrow('Invalid param: interval duration must be a number');
 	});
 
-	it('valid schedule cron job for every 20 minute', () => {
+	it('valid schedule cron job for every 20 minutes', () => {
 		const logSpy = jest.spyOn(console, 'log').mockImplementation(() => {});
 		const lambdaCron = getLambdaCronInstance({
 			type: 'interval',
 			params: {
-				unit: 'minute',
+				unit: 'minutes',
 				duration: 20,
 			},
 		});
 		lambdaCron.hooks[BEFORE_PACKAGE_HOOK]();
-		expect(logSpy).toHaveBeenCalledWith('scheduled cron for: ', {
+		expect(logSpy).toHaveBeenCalledWith('lambda-cron: scheduled cron for: ', {
 			function: 'hello',
-			schedule: { params: { unit: 'minute', duration: 20 }, type: 'interval' },
+			schedule: { params: { unit: 'minutes', duration: 20 }, type: 'interval' },
+		});
+	});
+
+	it('valid schedule cron job for every 2 hours', () => {
+		const logSpy = jest.spyOn(console, 'log').mockImplementation(() => {});
+		const lambdaCron = getLambdaCronInstance({
+			type: 'interval',
+			params: {
+				unit: 'hours',
+				duration: 2,
+			},
+		});
+		lambdaCron.hooks[BEFORE_PACKAGE_HOOK]();
+		expect(logSpy).toHaveBeenCalledWith('lambda-cron: scheduled cron for: ', {
+			function: 'hello',
+			schedule: { params: { unit: 'hours', duration: 2 }, type: 'interval' },
+		});
+	});
+
+	it('valid schedule cron job for every 2 days', () => {
+		const logSpy = jest.spyOn(console, 'log').mockImplementation(() => {});
+		const lambdaCron = getLambdaCronInstance({
+			type: 'interval',
+			params: {
+				unit: 'days',
+				duration: 2,
+			},
+		});
+		lambdaCron.hooks[BEFORE_PACKAGE_HOOK]();
+		expect(logSpy).toHaveBeenCalledWith('lambda-cron: scheduled cron for: ', {
+			function: 'hello',
+			schedule: { params: { unit: 'days', duration: 2 }, type: 'interval' },
 		});
 	});
 });
@@ -271,7 +303,7 @@ describe('Daily Schedule', () => {
 
 		lambdaCron.hooks[BEFORE_PACKAGE_HOOK]();
 		expect(logSpy).toHaveBeenCalledWith(
-			'minute is not provided in params default value is set to 0'
+			'lambda-cron: minute is not provided in params default value is set to 0'
 		);
 	});
 
@@ -286,7 +318,7 @@ describe('Daily Schedule', () => {
 		});
 
 		lambdaCron.hooks[BEFORE_PACKAGE_HOOK]();
-		expect(logSpy).toHaveBeenCalledWith('scheduled cron for: ', {
+		expect(logSpy).toHaveBeenCalledWith('lambda-cron: scheduled cron for: ', {
 			function: 'hello',
 			schedule: { params: { hour: 2, minute: 30 }, type: 'daily' },
 		});
@@ -426,12 +458,12 @@ describe('Weekly Schedule', () => {
 
 		expect(logSpy.mock.calls).toHaveLength(3);
 		expect(logSpy.mock.calls[0][0]).toBe(
-			'hour is not provided in params default value is set to 0'
+			'lambda-cron: hour is not provided in params default value is set to 0'
 		);
 		expect(logSpy.mock.calls[1][0]).toBe(
-			'minute is not provided in params default value is set to 0'
+			'lambda-cron: minute is not provided in params default value is set to 0'
 		);
-		expect(logSpy).toHaveBeenLastCalledWith('scheduled cron for: ', {
+		expect(logSpy).toHaveBeenLastCalledWith('lambda-cron: scheduled cron for: ', {
 			function: 'hello',
 			schedule: { params: { day: 'sunday' }, type: 'weekly' },
 		});
@@ -449,9 +481,9 @@ describe('Weekly Schedule', () => {
 		lambdaCron.hooks[BEFORE_PACKAGE_HOOK]();
 		expect(logSpy.mock.calls).toHaveLength(2);
 		expect(logSpy.mock.calls[0][0]).toBe(
-			'minute is not provided in params default value is set to 0'
+			'lambda-cron: minute is not provided in params default value is set to 0'
 		);
-		expect(logSpy).toHaveBeenCalledWith('scheduled cron for: ', {
+		expect(logSpy).toHaveBeenCalledWith('lambda-cron: scheduled cron for: ', {
 			function: 'hello',
 			schedule: { params: { day: 'sunday', hour: 2 }, type: 'weekly' },
 		});
@@ -470,9 +502,9 @@ describe('Weekly Schedule', () => {
 		lambdaCron.hooks[BEFORE_PACKAGE_HOOK]();
 		expect(logSpy.mock.calls).toHaveLength(2);
 		expect(logSpy).toHaveBeenCalledWith(
-			'hour is not provided in params default value is set to 0'
+			'lambda-cron: hour is not provided in params default value is set to 0'
 		);
-		expect(logSpy).toHaveBeenCalledWith('scheduled cron for: ', {
+		expect(logSpy).toHaveBeenCalledWith('lambda-cron: scheduled cron for: ', {
 			function: 'hello',
 			schedule: { params: { day: 'sunday', minute: 2 }, type: 'weekly' },
 		});
@@ -489,7 +521,7 @@ describe('Weekly Schedule', () => {
 			},
 		});
 		lambdaCron.hooks[BEFORE_PACKAGE_HOOK]();
-		expect(logSpy).toHaveBeenCalledWith('scheduled cron for: ', {
+		expect(logSpy).toHaveBeenCalledWith('lambda-cron: scheduled cron for: ', {
 			function: 'hello',
 			schedule: {
 				params: { day: 'sunday', hour: 15, minute: 45 },
@@ -647,12 +679,12 @@ describe('monthly Schedule', () => {
 		lambdaCron.hooks[BEFORE_PACKAGE_HOOK]();
 		expect(logSpy.mock.calls).toHaveLength(3);
 		expect(logSpy.mock.calls[0][0]).toBe(
-			'hour is not provided in params default value is set to 0'
+			'lambda-cron: hour is not provided in params default value is set to 0'
 		);
 		expect(logSpy.mock.calls[1][0]).toBe(
-			'minute is not provided in params default value is set to 0'
+			'lambda-cron: minute is not provided in params default value is set to 0'
 		);
-		expect(logSpy).toHaveBeenLastCalledWith('scheduled cron for: ', {
+		expect(logSpy).toHaveBeenLastCalledWith('lambda-cron: scheduled cron for: ', {
 			function: 'hello',
 			schedule: { params: { day: 3 }, type: 'monthly' },
 		});
@@ -671,9 +703,9 @@ describe('monthly Schedule', () => {
 		lambdaCron.hooks[BEFORE_PACKAGE_HOOK]();
 		expect(logSpy.mock.calls).toHaveLength(2);
 		expect(logSpy.mock.calls[0][0]).toBe(
-			'minute is not provided in params default value is set to 0'
+			'lambda-cron: minute is not provided in params default value is set to 0'
 		);
-		expect(logSpy).toHaveBeenLastCalledWith('scheduled cron for: ', {
+		expect(logSpy).toHaveBeenLastCalledWith('lambda-cron: scheduled cron for: ', {
 			function: 'hello',
 			schedule: { params: { day: 2, hour: 15 }, type: 'monthly' },
 		});
@@ -692,9 +724,9 @@ describe('monthly Schedule', () => {
 		lambdaCron.hooks[BEFORE_PACKAGE_HOOK]();
 		expect(logSpy.mock.calls).toHaveLength(2);
 		expect(logSpy).toHaveBeenCalledWith(
-			'hour is not provided in params default value is set to 0'
+			'lambda-cron: hour is not provided in params default value is set to 0'
 		);
-		expect(logSpy).toHaveBeenLastCalledWith('scheduled cron for: ', {
+		expect(logSpy).toHaveBeenLastCalledWith('lambda-cron: scheduled cron for: ', {
 			function: 'hello',
 			schedule: { params: { day: 12, minute: 34 }, type: 'monthly' },
 		});
@@ -713,7 +745,7 @@ describe('monthly Schedule', () => {
 
 		lambdaCron.hooks[BEFORE_PACKAGE_HOOK]();
 
-		expect(logSpy).toHaveBeenCalledWith('scheduled cron for: ', {
+		expect(logSpy).toHaveBeenCalledWith('lambda-cron: scheduled cron for: ', {
 			function: 'hello',
 			schedule: { params: { day: 15, hour: 15, minute: 45 }, type: 'monthly' },
 		});
@@ -757,7 +789,7 @@ describe('monthly Schedule', () => {
 			{} as any
 		);
 		lambdaCron.hooks[BEFORE_PACKAGE_HOOK]();
-		expect(logSpy).toHaveBeenCalledWith('scheduled cron for: ', {
+		expect(logSpy).toHaveBeenCalledWith('lambda-cron: scheduled cron for: ', {
 			function: 'hello',
 			schedule: { params: { day: 16, hour: 16, minute: 16 }, type: 'monthly' },
 		});
@@ -1005,12 +1037,12 @@ describe('Yearly Schedule', () => {
 			'day is not provided in params default value is set to 1st day of the month'
 		);
 		expect(logSpy.mock.calls[1][0]).toBe(
-			'hour is not provided in params default value is set to 0'
+			'lambda-cron: hour is not provided in params default value is set to 0'
 		);
 		expect(logSpy.mock.calls[2][0]).toBe(
-			'minute is not provided in params default value is set to 0'
+			'lambda-cron: minute is not provided in params default value is set to 0'
 		);
-		expect(logSpy).toHaveBeenLastCalledWith('scheduled cron for: ', {
+		expect(logSpy).toHaveBeenLastCalledWith('lambda-cron: scheduled cron for: ', {
 			function: 'hello',
 			schedule: { params: { month: 2 }, type: 'yearly' },
 		});
@@ -1031,9 +1063,9 @@ describe('Yearly Schedule', () => {
 			'day is not provided in params default value is set to 1st day of the month'
 		);
 		expect(logSpy.mock.calls[1][0]).toBe(
-			'hour is not provided in params default value is set to 0'
+			'lambda-cron: hour is not provided in params default value is set to 0'
 		);
-		expect(logSpy).toHaveBeenLastCalledWith('scheduled cron for: ', {
+		expect(logSpy).toHaveBeenLastCalledWith('lambda-cron: scheduled cron for: ', {
 			function: 'hello',
 			schedule: { params: { month: 2, minute: 3 }, type: 'yearly' },
 		});
@@ -1054,9 +1086,9 @@ describe('Yearly Schedule', () => {
 			'day is not provided in params default value is set to 1st day of the month'
 		);
 		expect(logSpy.mock.calls[1][0]).toBe(
-			'minute is not provided in params default value is set to 0'
+			'lambda-cron: minute is not provided in params default value is set to 0'
 		);
-		expect(logSpy).toHaveBeenLastCalledWith('scheduled cron for: ', {
+		expect(logSpy).toHaveBeenLastCalledWith('lambda-cron: scheduled cron for: ', {
 			function: 'hello',
 			schedule: { params: { month: 2, hour: 3 }, type: 'yearly' },
 		});
@@ -1078,7 +1110,7 @@ describe('Yearly Schedule', () => {
 			'day is not provided in params default value is set to 1st day of the month'
 		);
 
-		expect(logSpy).toHaveBeenLastCalledWith('scheduled cron for: ', {
+		expect(logSpy).toHaveBeenLastCalledWith('lambda-cron: scheduled cron for: ', {
 			function: 'hello',
 			schedule: { params: { month: 2, hour: 3, minute: 10 }, type: 'yearly' },
 		});
@@ -1096,12 +1128,12 @@ describe('Yearly Schedule', () => {
 		lambdaCron.hooks[BEFORE_PACKAGE_HOOK]();
 		expect(logSpy.mock.calls).toHaveLength(3);
 		expect(logSpy.mock.calls[0][0]).toBe(
-			'hour is not provided in params default value is set to 0'
+			'lambda-cron: hour is not provided in params default value is set to 0'
 		);
 		expect(logSpy.mock.calls[1][0]).toBe(
-			'minute is not provided in params default value is set to 0'
+			'lambda-cron: minute is not provided in params default value is set to 0'
 		);
-		expect(logSpy).toHaveBeenLastCalledWith('scheduled cron for: ', {
+		expect(logSpy).toHaveBeenLastCalledWith('lambda-cron: scheduled cron for: ', {
 			function: 'hello',
 			schedule: { params: { month: 2, day: 3 }, type: 'yearly' },
 		});
@@ -1121,9 +1153,9 @@ describe('Yearly Schedule', () => {
 		lambdaCron.hooks[BEFORE_PACKAGE_HOOK]();
 		expect(logSpy.mock.calls).toHaveLength(2);
 		expect(logSpy).toHaveBeenCalledWith(
-			'hour is not provided in params default value is set to 0'
+			'lambda-cron: hour is not provided in params default value is set to 0'
 		);
-		expect(logSpy).toHaveBeenLastCalledWith('scheduled cron for: ', {
+		expect(logSpy).toHaveBeenLastCalledWith('lambda-cron: scheduled cron for: ', {
 			function: 'hello',
 			schedule: { params: { month: 2, day: 12, minute: 34 }, type: 'yearly' },
 		});
@@ -1143,9 +1175,9 @@ describe('Yearly Schedule', () => {
 		lambdaCron.hooks[BEFORE_PACKAGE_HOOK]();
 		expect(logSpy.mock.calls).toHaveLength(2);
 		expect(logSpy.mock.calls[0][0]).toBe(
-			'minute is not provided in params default value is set to 0'
+			'lambda-cron: minute is not provided in params default value is set to 0'
 		);
-		expect(logSpy).toHaveBeenLastCalledWith('scheduled cron for: ', {
+		expect(logSpy).toHaveBeenLastCalledWith('lambda-cron: scheduled cron for: ', {
 			function: 'hello',
 			schedule: { params: { month: 2, day: 2, hour: 15 }, type: 'yearly' },
 		});
@@ -1168,7 +1200,7 @@ describe('Yearly Schedule', () => {
 		});
 		lambdaCron.hooks[BEFORE_PACKAGE_HOOK]();
 
-		expect(logSpy).toHaveBeenCalledWith('scheduled cron for: ', {
+		expect(logSpy).toHaveBeenCalledWith('lambda-cron: scheduled cron for: ', {
 			function: 'hello',
 			schedule: {
 				type: 'yearly',
@@ -1216,7 +1248,7 @@ describe('Yearly Schedule', () => {
 			{} as any
 		);
 		lambdaCron.hooks[BEFORE_PACKAGE_HOOK]();
-		expect(logSpy).toHaveBeenCalledWith('scheduled cron for: ', {
+		expect(logSpy).toHaveBeenCalledWith('lambda-cron: scheduled cron for: ', {
 			function: 'hello',
 			schedule: {
 				params: { month: 2, day: 16, hour: 16, minute: 16 },
@@ -1224,33 +1256,31 @@ describe('Yearly Schedule', () => {
 			},
 		});
 	});
+});
 
+describe('Leap year', () => {
 	it('Valid: 2000 is a Leap Year', () => {
-		const logSpy = jest.spyOn(console, 'log').mockImplementation(() => {});
 		const lambdaCron = getLambdaCronInstance();
 
 		const result = lambdaCron.isLeapYear(2000);
 		expect(result).toBe(true);
 	});
-	
+
 	it('Valid: 2024 is a Leap Year', () => {
-		const logSpy = jest.spyOn(console, 'log').mockImplementation(() => {});
 		const lambdaCron = getLambdaCronInstance();
 
 		const result = lambdaCron.isLeapYear(2024);
 		expect(result).toBe(true);
 	});
-	
-	it('Valid: 1000 is a Leap Year', () => {
-		const logSpy = jest.spyOn(console, 'log').mockImplementation(() => {});
+
+	it('Valid: 1000 is not a Leap Year', () => {
 		const lambdaCron = getLambdaCronInstance();
 
 		const result = lambdaCron.isLeapYear(1000);
 		expect(result).toBe(false);
 	});
-	
-	it('Valid: 2025 is a Leap Year', () => {
-		const logSpy = jest.spyOn(console, 'log').mockImplementation(() => {});
+
+	it('Valid: 2025 is not a Leap Year', () => {
 		const lambdaCron = getLambdaCronInstance();
 
 		const result = lambdaCron.isLeapYear(1000);
