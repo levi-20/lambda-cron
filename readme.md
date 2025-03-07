@@ -121,14 +121,13 @@ With a `daily` schedule, you can run a job at a specific time of the day.
 }
 ```
 
-````yaml
 ```yaml
 schedule:
   type: daily
   params:
     hour: <hour-of-the-day> # required
     minute: <minute-of-the-hour> # optional, defaults to 0
-````
+```
 
 ### Weekly Schedule
 
