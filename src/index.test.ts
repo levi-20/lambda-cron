@@ -3,7 +3,6 @@
 import { describe } from '@jest/globals';
 import { BEFORE_PACKAGE_HOOK, CrontType } from './index';
 import LambdaCronJobs from './index';
-import Serverless from 'serverless';
 
 const getLambdaCronInstance = (schedule: any = null) => {
 	const serverlessConfiguration = {
@@ -30,7 +29,7 @@ const getLambdaCronInstance = (schedule: any = null) => {
 		getProvider: () => ({ name: 'aws' }),
 	} as unknown as any;
 
-	return new LambdaCronJobs(serverlessConfiguration as any, {} as any);
+	return new LambdaCronJobs(serverlessConfiguration, {} as any);
 };
 
 const slsConfigWithoutPluginConfig = {
@@ -1283,7 +1282,7 @@ describe('Leap year', () => {
 	it('Valid: 2025 is not a Leap Year', () => {
 		const lambdaCron = getLambdaCronInstance();
 
-		const result = lambdaCron.isLeapYear(1000);
+		const result = lambdaCron.isLeapYear(100);
 		expect(result).toBe(false);
 	});
 });
