@@ -117,7 +117,9 @@ export default class LambdaCronJobs {
 	private beforePackage() {
 		try {
 			if (!this.hasCronJobs()) {
-				console.log(`lambda:cron: No cron job configurations found for stage ${this.stage}`);
+				console.log(
+					`lambda:cron: No cron job configurations found for stage ${this.stage}`
+				);
 				return;
 			}
 
@@ -196,7 +198,7 @@ export default class LambdaCronJobs {
 		return `rate(${interval.duration} ${interval.unit})`;
 	}
 
-	private scheduleDaily = (daily: Daily) => {
+	private scheduleDaily(daily: Daily) {
 		if (!('hour' in daily))
 			throw new Error('Missing param: hour is required for daily schedule');
 		else if (typeof daily.hour != 'number' || daily.hour < 0 || daily.hour > 24)
@@ -213,13 +215,15 @@ export default class LambdaCronJobs {
 					'Invalid param: minute must be a number between 0 and 59'
 				);
 		} else {
-			console.log('lambda-cron: minute is not provided in params default value is set to 0');
+			console.log(
+				'lambda-cron: minute is not provided in params default value is set to 0'
+			);
 		}
 
 		const hours = daily.hour;
 		const minutes = daily?.minute ?? 0;
 		return `cron(${minutes} ${hours} * * ? *)`;
-	};
+	}
 
 	private scheduleWeekly(weekly: Weekly) {
 		if (!weekly?.day)
@@ -240,7 +244,9 @@ export default class LambdaCronJobs {
 					'Invalid param: hour must be a number be between 0 and 24'
 				);
 		} else
-			console.log('lambda-cron: hour is not provided in params default value is set to 0');
+			console.log(
+				'lambda-cron: hour is not provided in params default value is set to 0'
+			);
 
 		if (weekly.minute) {
 			if (
@@ -252,7 +258,9 @@ export default class LambdaCronJobs {
 					'Invalid param: minute must be a number between 0 and 59'
 				);
 		} else
-			console.log('lambda-cron: minute is not provided in params default value is set to 0');
+			console.log(
+				'lambda-cron: minute is not provided in params default value is set to 0'
+			);
 
 		const day = weekly.day.toLowerCase();
 		const hours = weekly?.hour ?? 0;
@@ -279,7 +287,9 @@ export default class LambdaCronJobs {
 					'Invalid param: hour must be a number be between 0 and 24'
 				);
 		} else
-			console.log('lambda-cron: hour is not provided in params default value is set to 0');
+			console.log(
+				'lambda-cron: hour is not provided in params default value is set to 0'
+			);
 
 		if (monthly.minute) {
 			if (
@@ -291,7 +301,9 @@ export default class LambdaCronJobs {
 					'Invalid param: minute must be a number between 0 and 59'
 				);
 		} else
-			console.log('lambda-cron: minute is not provided in params default value is set to 0');
+			console.log(
+				'lambda-cron: minute is not provided in params default value is set to 0'
+			);
 
 		const day = monthly.day;
 		const hours = monthly?.hour ?? 0;
@@ -329,7 +341,9 @@ export default class LambdaCronJobs {
 					'Invalid param: hour must be a number be between 0 and 24'
 				);
 		} else
-			console.log('lambda-cron: hour is not provided in params default value is set to 0');
+			console.log(
+				'lambda-cron: hour is not provided in params default value is set to 0'
+			);
 
 		if (yearly.minute) {
 			if (
@@ -341,7 +355,9 @@ export default class LambdaCronJobs {
 					'Invalid param: minute must be a number between 0 and 59'
 				);
 		} else
-			console.log('lambda-cron: minute is not provided in params default value is set to 0');
+			console.log(
+				'lambda-cron: minute is not provided in params default value is set to 0'
+			);
 
 		const day = yearly?.day ?? 1;
 		const hours = yearly?.hour ?? 0;
