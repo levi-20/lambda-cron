@@ -369,7 +369,7 @@ export default class LambdaCronJobs {
 		let maxDays = 31;
 		switch (month) {
 			case 2:
-				maxDays = this.isLeapYear() ? 29 : 28;
+				maxDays = this.isLeapYear(new Date().getFullYear()) ? 29 : 28;
 				break;
 			case 4:
 			case 6:
@@ -381,8 +381,7 @@ export default class LambdaCronJobs {
 		return maxDays;
 	}
 
-	public isLeapYear(year?: number) {
-		if (!year) year = new Date().getFullYear();
+	public isLeapYear(year: number) {
 		return (year % 4 == 0 && year % 100 != 0) || year % 400 == 0;
 	}
 }

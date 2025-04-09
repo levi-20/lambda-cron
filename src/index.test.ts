@@ -1282,7 +1282,7 @@ describe('Leap year', () => {
 	it('Valid: 2025 is not a Leap Year', () => {
 		const lambdaCron = getLambdaCronInstance();
 
-		const result = lambdaCron.isLeapYear(1000);
+		const result = lambdaCron.isLeapYear(100);
 		expect(result).toBe(false);
 	});
 });
