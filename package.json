@@ -1,6 +1,6 @@
 {
   "name": "lambda-cron",
-  "version": "1.1.1",
+  "version": "1.1.2",
   "description": "Super light weight Serverless Plugin to simplify adding cron jobs to aws lambda functions",
   "author": "levi",
   "repository": {
@@ -23,13 +23,13 @@
     "@serverless/typescript": "^3.38.0",
     "@types/jest": "^29.5.14",
     "@types/node": "22.10.7",
-    "@types/serverless": "^3.12.23",
+    "@types/serverless": "^3.12.27",
     "jest": "^29.7.0",
     "serverless": "^3.0.0",
-    "ts-jest": "^29.2.5",
+    "ts-jest": "^29.4.6",
     "ts-node": "^10.9.2",
     "tsup": "^8.3.5",
-    "typescript": "^5.7.3"
+    "typescript": "^5.9.3"
   },
   "keywords": [
     "lambda-cron",
